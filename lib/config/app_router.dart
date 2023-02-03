@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_category_page/category_page_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_checker/game_checker_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_start/game_start_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/game_player_page/game_player_bloc.dart';
 import 'package:quiz_bet/layer_buisness/cubits/game_start_info_cubit/game_start_info_cubit.dart';
@@ -101,11 +102,18 @@ class AppRouter {
                       AuthPageRepository(service: AuthPageService()),
                 ),
               ],
-              child: BlocProvider(
-                create: (context) => GamePlayerBloc(
-                  gamePageRepository: context.read<GamePageRepository>(),
-                  authPageRepository: context.read<AuthPageRepository>(),
-                ),
+              child: MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => GamePlayerBloc(
+                      gamePageRepository: context.read<GamePageRepository>(),
+                      authPageRepository: context.read<AuthPageRepository>(),
+                    ),
+                  ),
+                  BlocProvider(
+                    create: (context) => GameCheckerBloc(),
+                  ),
+                ],
                 child: GamePlayerPage(
                   gameInfo: args.data['gameInfo'],
                   amountToBet: args.data['amountToBet'],

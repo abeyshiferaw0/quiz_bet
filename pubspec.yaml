@@ -30,6 +30,7 @@ dependencies:
 
   #FOR TIME MANAGEMENT(TIMER AND ALARM)
   timer_controller: ^0.1.0
+  timer_count_down: ^2.2.0
 
   #FOR AUDIO
   flutter_beep: ^1.0.0

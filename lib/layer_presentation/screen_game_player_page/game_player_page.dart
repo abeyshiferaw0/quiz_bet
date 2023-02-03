@@ -164,52 +164,53 @@ class _GamePlayerPageState extends State<GamePlayerPage> {
   }
 
   Expanded buildQuestionsSlider(GameLevel gameLevel) {
+
     return Expanded(
       child: CupertinoPageScaffold(
         child: AppinioSwiper(
           cards: PagesUtil.getGameLevelQuestionsCards(
             gameLevel,
             widget.amountToBet,
-            (GameQuestion gameQuestion, Choice? choice) {
-              ///SET USERS ANSWER
-              gameLevel.questions
-                  .firstWhere((element) => element.id == gameQuestion.id)
-                  .choice
-                  .usersAnswer = choice;
-
-              ///WHEN QUESTION ABOUT TO SWIPE
-              ///CHECK IF ANSWER IS CORRECT
-              ///SWIPE IF CORRECT SHOW LEVEL FAILURE IF NOT
-              bool answerIsCorrect = true;
-              if (choice == null) {
-                answerIsCorrect = false;
-              } else {
-                if (gameQuestion.choice.correctOption != choice.option) {
-                  answerIsCorrect = false;
-                }
-              }
-
-
-              print("answerIsCorrect =>> ${answerIsCorrect}");
-              if (answerIsCorrect) {
-                ///SWIPE AS TIME HAS ENDED
-               // swipeQuestions(gameLevel);
-              } else {
-                showDialog<bool>(
-                  context: context,
-                  builder: (context) {
-                    return DialogLevelFailure();
-                  },
-                ).then((value) => Navigator.pop(context));
-              }
-            },
-            (GameQuestion gameQuestion, Choice choice) {
-              ///SET USERS ANSWER
-              gameLevel.questions
-                  .firstWhere((element) => element.id == gameQuestion.id)
-                  .choice
-                  .usersAnswer = choice;
-            },
+            // (GameQuestion gameQuestion, Choice? choice) {
+            //   // ///SET USERS ANSWER
+            //   // gameLevel.questions
+            //   //     .firstWhere((element) => element.id == gameQuestion.id)
+            //   //     .choice
+            //   //     .usersAnswer = choice;
+            //   //
+            //   // ///WHEN QUESTION ABOUT TO SWIPE
+            //   // ///CHECK IF ANSWER IS CORRECT
+            //   // ///SWIPE IF CORRECT SHOW LEVEL FAILURE IF NOT
+            //   // bool answerIsCorrect = true;
+            //   // if (choice == null) {
+            //   //   answerIsCorrect = false;
+            //   // } else {
+            //   //   if (gameQuestion.choice.correctOption != choice.option) {
+            //   //     answerIsCorrect = false;
+            //   //   }
+            //   // }
+            //   //
+            //   //
+            //   // print("answerIsCorrect =>> ${answerIsCorrect}");
+            //   // if (answerIsCorrect) {
+            //   //   ///SWIPE AS TIME HAS ENDED
+            //   //  // swipeQuestions(gameLevel);
+            //   // } else {
+            //   //   showDialog<bool>(
+            //   //     context: context,
+            //   //     builder: (context) {
+            //   //       return DialogLevelFailure();
+            //   //     },
+            //   //   ).then((value) => Navigator.pop(context));
+            //   // }
+            // },
+            // (GameQuestion gameQuestion, Choice choice) {
+            //   ///SET USERS ANSWER
+            //   // gameLevel.questions
+            //   //     .firstWhere((element) => element.id == gameQuestion.id)
+            //   //     .choice
+            //   //     .usersAnswer = choice;
+            // },
           ),
           controller: appinioSwiperController,
           duration: const Duration(milliseconds: 600),

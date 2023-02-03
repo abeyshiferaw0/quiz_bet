@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_beep/flutter_beep.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_checker/game_checker_bloc.dart';
 import 'package:quiz_bet/layer_data/models/enums.dart';
+import 'package:quiz_bet/layer_data/models/game_level.dart';
 import 'package:quiz_bet/layer_data/models/game_question.dart';
 import 'package:quiz_bet/layer_data/models/game_question_choice.dart';
 import 'package:quiz_bet/layer_presentation/common/app_card.dart';
@@ -11,58 +13,106 @@ import 'package:quiz_bet/theme/app_sizes.dart';
 import 'package:quiz_bet/utils/pages_util.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timer_controller/timer_controller.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 
 class ItemGameQuizCard extends StatefulWidget {
-  const ItemGameQuizCard(
-      {Key? key,
-      required this.gameQuestion,
-      required this.questionNumber,
-      required this.odd,
-      required this.amountToBet,
-      required this.onTimeEnd, required this.onAnswerPicked})
-      : super(key: key);
+  const ItemGameQuizCard({
+    Key? key,
+    required this.gameQuestion,
+    required this.questionNumber,
+    required this.amountToBet,
+    required this.gameLevel,
+  }) : super(key: key);
 
+  final GameLevel gameLevel;
   final int questionNumber;
   final GameQuestion gameQuestion;
-  final double odd;
   final int amountToBet;
-  final Function(GameQuestion gameQuestion,Choice? choice) onTimeEnd;
-  final Function(GameQuestion gameQuestion,Choice choice) onAnswerPicked;
 
   @override
   State<ItemGameQuizCard> createState() => _ItemGameQuizCardState();
 }
 
-class _ItemGameQuizCardState extends State<ItemGameQuizCard> {
+class _ItemGameQuizCardState extends State<ItemGameQuizCard> with TickerProviderStateMixin{
   int selectedAnswerIndex = -1;
+  late AnimationController _controller;
 
   late final TimerController timerController;
 
   double linerProgressPercentage = 1.0;
   QuestionTimeLeftStatus questionTimeLeftStatus = QuestionTimeLeftStatus.GREEN;
 
+
   @override
   void initState() {
-    //timerController = TimerController.seconds(widget.gameQuestion.maxTimeInSec);
-    timerController = TimerController.seconds(5);
-    timerController.start();
+    super.initState();
 
-    timerController.addListener(() {
-      if (timerController.value.remaining < 1) {
-        if (selectedAnswerIndex != -1) {
-          print("CHECK BUG => onTimeEnd 1");
-          widget.onTimeEnd(
-            widget.gameQuestion,widget.gameQuestion.choice.choices.elementAt(selectedAnswerIndex),
-          );
-        } else {
-          print("CHECK BUG => onTimeEnd 2");
-          widget.onTimeEnd(widget.gameQuestion,null);
-        }
-      }
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        milliseconds: 4000,
+      ),
+    )..addStatusListener((AnimationStatus status) {
+      if (status == AnimationStatus.completed)
+        print('AnimationController => ${status} ${widget.gameQuestion.id}');
     });
 
-    super.initState();
+
+    _controller.addListener(() {
+
+      print('AnimationController => progress ${widget.gameQuestion.id}');
+      setState(() {});
+    });
+
+    _controller.forward();
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  // @override
+  // void initState() {
+  //   //timerController = TimerController.seconds(widget.gameQuestion.maxTimeInSec);
+  //   timerController = TimerController.seconds(5);
+  //   timerController.start();
+  //
+  //
+  //   timerController.addListener(
+  //     () {
+  //
+  //
+  //
+  //       if (timerController.value.remaining < 1) {
+  //         if (selectedAnswerIndex != -1) {
+  //           ///TIME END QUESTION ANSWERED
+  //           context.read<GameCheckerBloc>().add(
+  //                 CheckAnswerEvent(
+  //                   gameLevel: widget.gameLevel,
+  //                   gameQuestion: widget.gameQuestion,
+  //                   choice: widget.gameQuestion.choice.choices
+  //                       .elementAt(selectedAnswerIndex),
+  //                 ),
+  //               );
+  //         } else {
+  //           ///TIME END QUESTION NOT ANSWERED
+  //           context.read<GameCheckerBloc>().add(
+  //                 CheckAnswerEvent(
+  //                   gameLevel: widget.gameLevel,
+  //                   gameQuestion: widget.gameQuestion,
+  //                   choice: widget.gameQuestion.choice.choices
+  //                       .elementAt(selectedAnswerIndex),
+  //                 ),
+  //               );
+  //         }
+  //       }
+  //     },
+  //   );
+  //
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +157,17 @@ class _ItemGameQuizCardState extends State<ItemGameQuizCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Countdown(
+          seconds: 20,
+          build: (BuildContext context, double time) {
+            print('Timer is done! ${time}');
+            return Text(time.toString());
+          },
+          interval: Duration(milliseconds: 100),
+          onFinished: () {
+            print('Timer is done!');
+          },
+        ),
         SizedBox(
           height: AppSizes.icon_size_4 * 0.7,
           child: ClipRRect(
@@ -125,6 +186,9 @@ class _ItemGameQuizCardState extends State<ItemGameQuizCard> {
                 backgroundColor: AppColors.lightGrey,
               ),
               listener: (BuildContext context, TimerValue value) {
+
+                print("timerController => ${timerController.value.remaining}");
+
                 setState(() {
                   linerProgressPercentage = ((value.remaining * 100) /
                           widget.gameQuestion.maxTimeInSec) /
@@ -246,9 +310,6 @@ class _ItemGameQuizCardState extends State<ItemGameQuizCard> {
             selectedAnswerIndex = index;
           });
 
-          print("CHECK BUG => onAnswerPicked");
-          widget.onAnswerPicked(widget.gameQuestion,choice);
-
           FlutterBeep.playSysSound(iOSSoundIDs.KeyPressed3);
         },
         child: Center(
@@ -287,7 +348,7 @@ class _ItemGameQuizCardState extends State<ItemGameQuizCard> {
             horizontal: AppSizes.mp_w_6,
           ),
           child: Text(
-            "Winning odd\n${widget.amountToBet.toStringAsFixed(2)} ETB * ${widget.odd} = ${(widget.amountToBet * widget.odd).toStringAsFixed(2)} ETB",
+            "Winning odd\n${widget.amountToBet.toStringAsFixed(2)} ETB * ${widget.gameLevel.odd} = ${(widget.amountToBet * widget.gameLevel.odd).toStringAsFixed(2)} ETB",
             textAlign: TextAlign.start,
             style: Theme.of(context).textTheme.bodySmall!.copyWith(
                   color: AppColors.darkGold,

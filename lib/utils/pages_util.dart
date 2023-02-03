@@ -57,9 +57,7 @@ class PagesUtil {
 
   static getGameLevelQuestionsCards(
       GameLevel gameLevel,
-      int amountToBet,
-      Function(GameQuestion gameQuestion, Choice? choice) onTimeEnd,
-      Function(GameQuestion gameQuestion, Choice choice) onAnswerPicked) {
+      int amountToBet) {
     List<Widget> cards = [];
 
     ///ADD QUESTIONS CARD
@@ -69,10 +67,7 @@ class PagesUtil {
           key: Key(element.id),
           questionNumber: gameLevel.questions.indexOf(element) + 1,
           gameQuestion: element,
-          odd: gameLevel.odd,
-          amountToBet: amountToBet,
-          onTimeEnd: onTimeEnd,
-          onAnswerPicked: onAnswerPicked,
+          amountToBet: amountToBet, gameLevel: gameLevel,
         ),
       );
     }
