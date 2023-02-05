@@ -23,8 +23,14 @@ class GameStartedEvent extends GamePlayerEvent {
 }
 
 class GameNextLevelEventEvent extends GamePlayerEvent {
-  const GameNextLevelEventEvent();
+  const GameNextLevelEventEvent({required this.gameInfo, required this.amountToBet, required this.vatPer,});
+
+  final GameInfo gameInfo;
+  final int amountToBet;
+  final double vatPer;
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [gameInfo,
+    amountToBet,
+    vatPer,];
 }

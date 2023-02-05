@@ -8,13 +8,15 @@ class StartLevelEvent extends GameCheckerEvent {
   final GameInfo gameInfo;
   final GameLevel gameLevel;
 
-  const StartLevelEvent({
+
+  const StartLevelEvent( {
     required this.gameInfo,
     required this.gameLevel,
   });
 
   @override
   List<Object?> get props => [
+
         gameInfo,
         gameLevel,
       ];
@@ -23,9 +25,11 @@ class StartLevelEvent extends GameCheckerEvent {
 class CheckAnswerEvent extends GameCheckerEvent {
   final GameLevel gameLevel;
   final GameQuestion gameQuestion;
-  final Choice choice;
+  final Choice? choice;
+  final int timeTaken;
 
-  const CheckAnswerEvent({
+  const CheckAnswerEvent( {
+    required this.timeTaken,
     required this.gameLevel,
     required this.gameQuestion,
     required this.choice,
@@ -36,5 +40,23 @@ class CheckAnswerEvent extends GameCheckerEvent {
     gameLevel,
         gameQuestion,
         choice,
+    timeTaken,
       ];
+}
+
+
+class CheckAnswerShowNextLevelCountDownEvent extends GameCheckerEvent {
+
+  final GameLevel gameLevel;
+  final Choice? choice;
+  final int timeTaken;
+
+  const CheckAnswerShowNextLevelCountDownEvent({required this.gameLevel, this.choice, required this.timeTaken,});
+
+  @override
+  List<Object?> get props => [
+    gameLevel,
+    choice,
+    timeTaken,
+  ];
 }

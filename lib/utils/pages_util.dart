@@ -55,31 +55,7 @@ class PagesUtil {
     }
   }
 
-  static getGameLevelQuestionsCards(
-      GameLevel gameLevel,
-      int amountToBet) {
-    List<Widget> cards = [];
 
-    ///ADD QUESTIONS CARD
-    for (var element in gameLevel.questions) {
-      cards.add(
-        ItemGameQuizCard(
-          key: Key(element.id),
-          questionNumber: gameLevel.questions.indexOf(element) + 1,
-          gameQuestion: element,
-          amountToBet: amountToBet, gameLevel: gameLevel,
-        ),
-      );
-    }
-
-    ///FINALLY ADD RESULT UI
-    cards.add(const ItemGameResultCard());
-
-    ///REVERSE FOR LIST TO BE DISPLAYED QUESTIONS FIRST
-    cards = cards.reversed.toList();
-
-    return cards;
-  }
 
   static Color getQuestionCardProgressColor(
       QuestionTimeLeftStatus questionTimeLeftStatus) {

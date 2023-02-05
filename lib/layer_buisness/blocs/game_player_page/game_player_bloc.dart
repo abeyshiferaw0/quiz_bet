@@ -23,13 +23,14 @@ class GamePlayerBloc extends Bloc<GamePlayerEvent, GamePlayerState> {
       : super(GamePlayerInitial()) {
     on<GamePlayerEvent>((event, emit) {
       if (event is GameStartedEvent) {
-
         gameInfo = event.gameInfo;
         gameLevelIndex = 0;
 
         ///PLAY INITIAL GAME LEVEL
         emit(GamePlayerPlayLevelState(
+          gameInfo: gameInfo,
           gameLevel: event.gameInfo.levels.elementAt(gameLevelIndex),
+          curentLevelIndex: gameLevelIndex,
         ));
       }
 
@@ -37,13 +38,31 @@ class GamePlayerBloc extends Bloc<GamePlayerEvent, GamePlayerState> {
         ///INCREASE LEVEL INDEX
         gameLevelIndex++;
 
-        ///PLAY NEXT LEVEL
-        emit(
-          GamePlayerPlayLevelState(
-            gameLevel: gameInfo.levels.elementAt(gameLevelIndex),
-          ),
-        );
+        print("islastLevel =>>> TRUE ${gameLevelIndex}");
+
+        if (islastLevel(gameInfo, gameLevelIndex)) {
+          ///PLAY INITIAL GAME LEVEL
+          emit(const GamePlayerLevelsDoneState());
+        } else {
+          ///PLAY INITIAL GAME LEVEL
+          emit(GamePlayerPlayLevelState(
+            gameInfo: gameInfo,
+            gameLevel: event.gameInfo.levels.elementAt(gameLevelIndex),
+            curentLevelIndex: gameLevelIndex,
+          ));
+        }
       }
     });
+  }
+
+  islastLevel(GameInfo gameInfo, int gameLevelIndex) {
+    if ((gameInfo.levels.length ) == gameLevelIndex) {
+      print("islastLevel =>>> TRUE ${gameInfo.levels.length}");
+      return true;
+
+    } else {
+      print("islastLevel =>>> FALSE ${gameInfo.levels.length}");
+      return false;
+    }
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_category_page/category_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_checker/game_checker_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_start/game_start_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_gmae_history_saver/game_history_saver_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/game_player_page/game_player_bloc.dart';
 import 'package:quiz_bet/layer_buisness/cubits/game_start_info_cubit/game_start_info_cubit.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
@@ -112,6 +113,11 @@ class AppRouter {
                   ),
                   BlocProvider(
                     create: (context) => GameCheckerBloc(),
+                  ),
+                  BlocProvider(
+                    create: (context) => GameHistorySaverBloc(
+                      gamePageRepository: context.read<GamePageRepository>(),
+                    ),
                   ),
                 ],
                 child: GamePlayerPage(

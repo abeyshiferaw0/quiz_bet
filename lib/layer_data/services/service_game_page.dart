@@ -65,4 +65,22 @@ class GamePageService {
       rethrow;
     }
   }
+
+  Future<void> saveGameHistory(String quizId,GameLevel gameLevel, int timeTaken) async {
+    try {
+
+      ///INSERT GAME QUIZ
+      var response = await hasuraConnect.mutation(
+        gqlGamePage.saveGameHistory(
+          quizId,gameLevel,timeTaken,
+        ),
+      );
+
+     return;
+    } catch (e) {
+      log.e("startGameLevel => ${e.toString()}");
+      rethrow;
+    }
+  }
+
 }

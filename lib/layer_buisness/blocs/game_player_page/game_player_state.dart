@@ -12,10 +12,21 @@ class GamePlayerInitial extends GamePlayerState {
 
 class GamePlayerPlayLevelState extends GamePlayerState {
 
+  final GameInfo gameInfo;
   final GameLevel gameLevel;
+  final int curentLevelIndex;
 
-  const GamePlayerPlayLevelState({required this.gameLevel});
+  const GamePlayerPlayLevelState({required this.curentLevelIndex, required this.gameInfo, required this.gameLevel});
 
   @override
-  List<Object> get props => [gameLevel];
+  List<Object> get props => [curentLevelIndex,gameInfo,gameLevel];
+}
+
+
+class GamePlayerLevelsDoneState extends GamePlayerState {
+
+  const GamePlayerLevelsDoneState();
+
+  @override
+  List<Object> get props => [];
 }

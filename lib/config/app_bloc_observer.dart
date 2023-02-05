@@ -6,15 +6,16 @@ class AppBlocObserver extends BlocObserver {
     printer: PrettyPrinter(colors: true),
   );
 
-  @override
-  void onChange(BlocBase bloc, Change change) {
-    super.onChange(bloc, change);
-    log.i(change);
-  }
+  // @override
+  // void onChange(BlocBase bloc, Change change) {
+  //   super.onChange(bloc, change);
+  //   log.i(change);
+  // }
 
   @override
   void onTransition(Bloc bloc, Transition transition) {
     super.onTransition(bloc, transition);
-    log.i(transition);
+    log.i("CURRENT STATE => ${transition.currentState}");
+    log.i("NEXT STATE => ${transition.nextState}");
   }
 }

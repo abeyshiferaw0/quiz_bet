@@ -11,12 +11,9 @@ import 'package:quiz_bet/layer_presentation/common/app_carousel.dart';
 import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
 import 'package:quiz_bet/layer_presentation/common/app_feedback_button.dart';
 import 'package:quiz_bet/layer_presentation/common/app_loading_widget.dart';
-import 'package:quiz_bet/layer_presentation/screen_home_page/widgets/item_winners_header.dart';
+import 'package:quiz_bet/layer_presentation/screen_home_page/widgets/item_system_ad.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
-import 'package:quiz_bet/utils/color_util.dart';
-import 'package:sizer/sizer.dart';
-import 'widgets/item_big_prize_header.dart';
 import 'widgets/item_trending_game.dart';
 
 class HomePage extends StatefulWidget {
@@ -34,7 +31,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    context.read<HomePageBloc>().add(LoadHomePageEvent());
+    context.read<HomePageBloc>().add(const LoadHomePageEvent());
 
     super.initState();
   }
@@ -44,14 +41,13 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: BlocBuilder<HomePageBloc, HomePageState>(
         builder: (context, state) {
-
           if (state is HomePageLoading) {
             return const AppLoadingWidget();
           }
           if (state is HomePageLoadingError) {
             return AppErrorWidget(
               onTryAgain: () {
-                context.read<HomePageBloc>().add(LoadHomePageEvent());
+                context.read<HomePageBloc>().add(const LoadHomePageEvent());
               },
             );
           }
@@ -60,7 +56,7 @@ class _HomePageState extends State<HomePage> {
             return buildLoadedView(context, state.homePageData);
           }
 
-          return SizedBox();
+          return const SizedBox();
         },
       ),
     );
@@ -73,19 +69,19 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ///BUILD HEADER CARDS
-          buildHeaderCards(),
+          buildHeaderCards(homePageData),
 
           ///BUILD CATEGORIES LIST
           buildCategoriesList(context, homePageData.categoryList),
 
           ///BUILD TRENDING
-          buildTrendingItems(context),
+          buildTrendingItems(context,homePageData),
         ],
       ),
     );
   }
 
-  Column buildTrendingItems(BuildContext context) {
+  Column buildTrendingItems(BuildContext context, HomePageData homePageData) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -106,7 +102,7 @@ class _HomePageState extends State<HomePage> {
           height: AppSizes.mp_v_2,
         ),
         ExpandablePageView.builder(
-          itemCount: 3,
+          itemCount: homePageData.trendingCategories.length,
           physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
@@ -132,8 +128,13 @@ class _HomePageState extends State<HomePage> {
                   Navigator.pushNamed(
                     context,
                     AppRouterPaths.gamePlayerInfoPage,
+                    arguments: ScreenArguments(
+                      data: {
+                        'categoryId': homePageData.trendingCategories.elementAt(index).categoryId,
+                      },
+                    ),
                   );
-                },
+                }, categoryTrending: homePageData.trendingCategories.elementAt(index),
               ),
             );
           },
@@ -200,7 +201,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  buildHeaderCards() {
+  buildHeaderCards(HomePageData homePageData) {
     return Container(
       margin: EdgeInsets.only(
         top: AppSizes.mp_w_1,
@@ -209,13 +210,15 @@ class _HomePageState extends State<HomePage> {
         //right: AppSizes.mp_w_3,
       ),
       child: AppCarousel(
-        dotColor: AppColors.lightWhite,
-        selectedDotColor: AppColors.gold,
-        children: const [
-          ItemWinnersHeader(),
-          ItemBigPrizeHeader(),
-        ],
-      ),
+          dotColor: AppColors.lightWhite,
+          selectedDotColor: AppColors.gold,
+          children: homePageData.ads
+              .map((e) => ItemSystemAd(
+            height: AppSizes.icon_size_32*1.2,
+                    onTap: () {},
+                    ad: e,
+                  ))
+              .toList()),
     );
   }
 
@@ -225,7 +228,6 @@ class _HomePageState extends State<HomePage> {
     categoriesList = List.generate(
       categoryList.length,
       (index) => Container(
-
         margin: EdgeInsets.only(
           right: AppSizes.mp_w_1,
           left: AppSizes.mp_w_3,
@@ -248,6 +250,11 @@ class _HomePageState extends State<HomePage> {
             Navigator.pushNamed(
               context,
               AppRouterPaths.gamePlayerInfoPage,
+              arguments: ScreenArguments(
+                data: {
+                  'categoryId': categoryList.elementAt(index).id,
+                },
+              ),
             );
           },
           child: Padding(

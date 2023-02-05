@@ -21,6 +21,7 @@ class AppColors {
   static Color transparent = Colors.transparent;
   static Color green=const Color(0xff2FBF71);
   static Color red =const Color(0xffFF3800);
+  static Color yellow = const Color(0xffffc317);
 
   ///GRADIENT COLORS
   static Color gradientOneColorOne = const Color(0xffc29f48);

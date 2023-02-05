@@ -1,3 +1,5 @@
+import 'package:quiz_bet/layer_data/models/game_level.dart';
+
 class GqlGamePage {
   String insertGameQuiz({
     required String categoryId,
@@ -17,7 +19,7 @@ class GqlGamePage {
   }) {
     return """
          query getGameLevelData {
-          game_categoryList_by_pk(id:"81e9d82a-4664-4815-aa48-757da2c090ad"){
+          game_categoryList_by_pk(id:"$categoryId"){
             id
             name_json
             description_json
@@ -49,5 +51,25 @@ class GqlGamePage {
   }
 
 
+  String saveGameHistory(String quizId,GameLevel level, int timeTaken) {
+
+    List<String> objects = [];
+
+    level.questions.forEach((element) {
+      objects.add('{quiz_id:"$quizId",question_id:"${element.id}",answer:"${element.choice.usersAnswer!.option}",time_taken:"$timeTaken"}');
+    });
+
+    print("objects => ${objects.join(",")}");
+
+    return """
+      mutation saveGameHistory {  
+        insert_game_gamePlayHistory(objects:[${objects.join(",")}]){
+          returning{
+            id
+          }
+        }
+      }
+    """;
+  }
 
 }

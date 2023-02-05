@@ -1,6 +1,9 @@
 import 'package:bouncing_button/bouncing_button.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:quiz_bet/layer_data/models/category_trending.dart';
+import 'package:quiz_bet/layer_presentation/common/app_image_place_holder.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 import 'package:sizer/sizer.dart';
@@ -8,10 +11,11 @@ import 'package:sizer/sizer.dart';
 
 class ItemTrendingGame extends StatelessWidget {
   const ItemTrendingGame({
-    Key? key, required this.onPlay,
+    Key? key, required this.onPlay, required this.categoryTrending,
   }) : super(key: key);
 
   final VoidCallback onPlay;
+  final CategoryTrending categoryTrending;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +87,7 @@ class ItemTrendingGame extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    "Tech",
+                    categoryTrending.name.nameAm,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: AppColors.gold,
@@ -111,19 +115,19 @@ class ItemTrendingGame extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "Prize\nAmount",
+            "Play Win \nUp To",
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall!.copyWith(
               color: AppColors.black,
-              fontSize: AppSizes.font_9,
-              fontWeight: FontWeight.w400,
+              fontSize: AppSizes.font_10,
+              fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(
             width: AppSizes.mp_w_4,
           ),
           Text(
-            "715,000+",
+              "${categoryTrending.totalOdds}X",
             style: Theme.of(context).textTheme.bodySmall!.copyWith(
               color: AppColors.black,
               fontSize: AppSizes.font_12,
@@ -140,11 +144,13 @@ class ItemTrendingGame extends StatelessWidget {
       height: 25.h,
       child: Stack(
         children: [
-          Image.network(
-            "https://www.engineering.columbia.edu/files/seas/styles/816x460/public/content/cs_image/2022/28/robot_hero.jpg?itok=TrT_MOb-",
+          CachedNetworkImage(
+            imageUrl: categoryTrending.image.mediumImage,
+            height: 20.h,
             fit: BoxFit.cover,
             width: double.infinity,
-            height: 20.h,
+            placeholder: (context,url)=>const AppPlaceHolderImage(),
+            errorWidget: (context, url, error) => const AppPlaceHolderImage(),
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -163,7 +169,7 @@ class ItemTrendingGame extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "70",
+                        "${categoryTrending.questionsCount}",
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: AppColors.black,
                           fontSize: AppSizes.font_12,
@@ -196,7 +202,7 @@ class ItemTrendingGame extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "70",
+                        "${categoryTrending.levelsCount}",
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: AppColors.black,
                           fontSize: AppSizes.font_12,

@@ -14,4 +14,8 @@ class AppAssets {
   static String winnerBadgeLottie = "assets/lottie/winner_badge.json";
   static String failureLottie = "assets/lottie/failure.json";
 
+  static const String successLottie = "assets/lottie/success.json";
+  static const String warningFaceLottie = "assets/lottie/warning_face.json";
+  static const String errorCancelLottie = "assets/lottie/error_cancel.json";
+
 }
