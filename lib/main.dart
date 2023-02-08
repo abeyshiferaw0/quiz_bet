@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       builder: (context, orientation, deviceType) {
         return MaterialApp(
           debugShowCheckedModeBanner: true,
-          initialRoute: AppRouterPaths.splashRoute,
+          initialRoute: AppRouterPaths.onBoardingPage,
           onGenerateRoute: _appRouter.generateRoute,
           builder: (BuildContext context, Widget? child) {
             final MediaQueryData data = MediaQuery.of(context);

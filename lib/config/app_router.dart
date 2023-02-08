@@ -5,16 +5,23 @@ import 'package:quiz_bet/layer_buisness/blocs/bloc_category_page/category_page_b
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_checker/game_checker_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_start/game_start_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_gmae_history_saver/game_history_saver_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_home_page/home_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/game_player_page/game_player_bloc.dart';
 import 'package:quiz_bet/layer_buisness/cubits/game_start_info_cubit/game_start_info_cubit.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_category_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_game_page.dart';
+import 'package:quiz_bet/layer_data/repositories/repository_home_page.dart';
 import 'package:quiz_bet/layer_data/services/service_auth_page.dart';
 import 'package:quiz_bet/layer_data/services/service_category_page.dart';
 import 'package:quiz_bet/layer_data/services/service_game_page.dart';
+import 'package:quiz_bet/layer_data/services/service_home_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_add_members/add_member_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_all_categories/all_categories_page.dart';
+import 'package:quiz_bet/layer_presentation/screen_auth_pages/auth_forgot_pass_page.dart';
+import 'package:quiz_bet/layer_presentation/screen_auth_pages/auth_pin_input_page.dart';
+import 'package:quiz_bet/layer_presentation/screen_auth_pages/auth_sign_in_page.dart';
+import 'package:quiz_bet/layer_presentation/screen_auth_pages/auth_sign_up_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_create_challange/create_challange_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_create_group/create_group_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_friend_request_page/all_frend_request_page.dart';
@@ -22,7 +29,12 @@ import 'package:quiz_bet/layer_presentation/screen_game_player_page/game_player_
 import 'package:quiz_bet/layer_presentation/screen_game_start_countdown_page/game_start_countdown_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_group_detail_page/group_detail_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_main_page/main_page.dart';
+import 'package:quiz_bet/layer_presentation/screen_on_boarding/onboarding_page.dart';
+import 'package:quiz_bet/layer_presentation/screen_on_boarding/onboarding_page_one.dart';
+import 'package:quiz_bet/layer_presentation/screen_on_boarding/onboarding_page_three.dart';
+import 'package:quiz_bet/layer_presentation/screen_on_boarding/onboarding_page_two.dart';
 import 'package:quiz_bet/layer_presentation/screen_profile_page/profile_page.dart';
+import 'package:quiz_bet/layer_presentation/screen_splash_page/spalsh_page.dart';
 
 import '../layer_presentation/screen_game_player_info_page/game_player_info_page.dart';
 
@@ -34,6 +46,15 @@ class ScreenArguments {
 
 class AppRouterPaths {
   static const String splashRoute = '/';
+  static const String onBoardingPage = '/on_boarding_page';
+
+  static const String authSignUp = '/auth_sign_up';
+  static const String authSignIn = '/auth_sign_in';
+  static const String authForgetPass = '/auth_forgot_pass';
+  static const String authInputPin = '/auth_input_pin';
+
+  static const String mainScreen = 'main_screen';
+
   static const String gamePlayerPage = '/game_player_page';
   static const String gamePlayerInfoPage = '/game_player_info_page';
   static const String gameStartCountDownPage = '/game_start_countdown_page';
@@ -53,7 +74,35 @@ class AppRouter {
     //ROUTERS PATH SWITCH
     switch (settings.name) {
       case AppRouterPaths.splashRoute:
-        builder = (_) => const MainPage();
+        builder = (_) => const SplashPage();
+        break;
+      case AppRouterPaths.onBoardingPage:
+        builder = (_) => const OnboardingPage();
+        break;
+
+      case AppRouterPaths.authSignUp:
+        builder = (_) => const AuthSignUpPage();
+        break;
+      case AppRouterPaths.authSignIn:
+        builder = (_) => const AuthSignInPage();
+        break;
+      case AppRouterPaths.authForgetPass:
+        builder = (_) => const AuthForgotPassPage();
+        break;
+      case AppRouterPaths.authInputPin:
+        builder = (_) => const AuthPinInputPagePage();
+        break;
+      case AppRouterPaths.mainScreen:
+        builder = (_) => RepositoryProvider(
+              create: (context) =>
+                  HomePageRepository(service: HomePageService()),
+              child: BlocProvider<HomePageBloc>(
+                create: (context) => HomePageBloc(
+                  homePageRepository: context.read<HomePageRepository>(),
+                ),
+                child: const MainPage(),
+              ),
+            );
         break;
       case AppRouterPaths.gamePlayerInfoPage:
         final args = settings.arguments as ScreenArguments;
@@ -168,6 +217,7 @@ class AppRouter {
       case AppRouterPaths.addMember:
         builder = (_) => const AddMembersPage();
         break;
+
       default:
         throw Exception('Invalid route: ${settings.name}');
     }

@@ -65,18 +65,8 @@ class _MainPageState extends State<MainPage> {
                 child: IndexedStack(
                   index: _selectedBottomPageIndex,
                   children: [
+                    HomePage(),
 
-                    RepositoryProvider(
-                      create: (context) =>
-                          HomePageRepository(service: HomePageService()),
-                      child: BlocProvider<HomePageBloc>(
-                        create: (context) => HomePageBloc(
-                          homePageRepository:
-                              context.read<HomePageRepository>(),
-                        ),
-                        child: HomePage(),
-                      ),
-                    ),
 
                     FriendsPage(),
                     PublicPage(),
