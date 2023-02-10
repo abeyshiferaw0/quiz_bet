@@ -29,15 +29,15 @@ class CategoryPageBloc extends Bloc<CategoryPageEvent, CategoryPageState> {
             CategoryPageLoaded(categoryList: categoryList),
           );
         } catch (e) {
-          CategoryPageLoadingError(
-            error: e.toString(),
+          emit(
+              CategoryPageLoadingError(
+                error: e.toString(),
+              )
           );
         }
-      } else {
+      }  else {
         ///EMIT LOADING ERROR
-        emit(
-          const CategoryPageLoadingError(error: 'Event not known'),
-        );
+        throw 'event not known';
       }
     });
   }

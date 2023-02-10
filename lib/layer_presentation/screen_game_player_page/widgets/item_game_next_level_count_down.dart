@@ -12,8 +12,13 @@ import 'package:quiz_bet/theme/app_sizes.dart';
 
 class ItemGameNextLevelCountDown extends StatefulWidget {
   const ItemGameNextLevelCountDown({
-    Key? key, required this.amountToBet, required this.vatPer, required this.gameLevel, required this.nextLevel, required this.gameInfo, required this.timeTaken,
-
+    Key? key,
+    required this.amountToBet,
+    required this.vatPer,
+    required this.gameLevel,
+    required this.nextLevel,
+    required this.gameInfo,
+    required this.timeTaken,
   }) : super(key: key);
 
   final int amountToBet;
@@ -24,16 +29,15 @@ class ItemGameNextLevelCountDown extends StatefulWidget {
   final int timeTaken;
 
   @override
-  State<ItemGameNextLevelCountDown> createState() => _ItemGameNextLevelCountDownState();
+  State<ItemGameNextLevelCountDown> createState() =>
+      _ItemGameNextLevelCountDownState();
 }
 
-class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
-     {
-
-
+class _ItemGameNextLevelCountDownState
+    extends State<ItemGameNextLevelCountDown> {
   @override
   Widget build(BuildContext context) {
-    return  AppCard(
+    return AppCard(
       radius: AppSizes.radius_12,
       child: Material(
         elevation: 2,
@@ -61,14 +65,11 @@ class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
                 ),
                 Text(
                   "QUIZ BET".toUpperCase(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(
-                    color: AppColors.black,
-                    fontSize: AppSizes.font_14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: AppColors.black,
+                        fontSize: AppSizes.font_14,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -92,10 +93,10 @@ class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
                   "Please make sure you have a stable intent connection!",
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    color: AppColors.darkGold,
-                    fontSize: AppSizes.font_10,
-                    fontWeight: FontWeight.w600,
-                  ),
+                        color: AppColors.darkGold,
+                        fontSize: AppSizes.font_10,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
               ),
             ),
@@ -151,10 +152,10 @@ class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
                 Text(
                   "Level 1",
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    color: AppColors.gold,
-                    fontWeight: FontWeight.bold,
-                    fontSize: AppSizes.font_12,
-                  ),
+                        color: AppColors.gold,
+                        fontWeight: FontWeight.bold,
+                        fontSize: AppSizes.font_12,
+                      ),
                 ),
                 SizedBox(
                   height: AppSizes.mp_v_1 / 2,
@@ -180,10 +181,10 @@ class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
                 Text(
                   "Questions 10/10",
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    color: AppColors.gold,
-                    fontSize: AppSizes.font_9,
-                    fontWeight: FontWeight.w400,
-                  ),
+                        color: AppColors.gold,
+                        fontSize: AppSizes.font_9,
+                        fontWeight: FontWeight.w400,
+                      ),
                 ),
               ],
             ),
@@ -203,7 +204,6 @@ class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-
         SizedBox(
           height: AppSizes.mp_v_6,
         ),
@@ -211,10 +211,10 @@ class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
           "Next level will start in",
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
-            color: AppColors.darkGold,
-            fontSize: AppSizes.font_14,
-            fontWeight: FontWeight.w600,
-          ),
+                color: AppColors.darkGold,
+                fontSize: AppSizes.font_14,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         SizedBox(
           height: AppSizes.mp_v_2,
@@ -224,10 +224,10 @@ class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
           child: DefaultTextStyle(
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-              color: AppColors.gold,
-              fontSize: AppSizes.font_28 * 2,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppColors.gold,
+                  fontSize: AppSizes.font_28 * 2,
+                  fontWeight: FontWeight.bold,
+                ),
             child: AnimatedTextKit(
               pause: const Duration(milliseconds: 500),
               //repeatForever: true,
@@ -239,12 +239,12 @@ class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
               onFinished: () {
                 ///START PLAYING INITIAL GAME LEVEL
                 context.read<GamePlayerBloc>().add(
-                  GameNextLevelEventEvent(
-                    gameInfo: widget.gameInfo,
-                    amountToBet: widget.amountToBet,
-                    vatPer: widget.vatPer,
-                  ),
-                );
+                      GameNextLevelEventEvent(
+                        gameInfo: widget.gameInfo,
+                        amountToBet: widget.amountToBet,
+                        vatPer: widget.vatPer,
+                      ),
+                    );
               },
               animatedTexts: [
                 FadeAnimatedText(
@@ -252,55 +252,55 @@ class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
                   duration: const Duration(milliseconds: 700),
                   textAlign: TextAlign.center,
                   textStyle:
-                  Theme.of(context).textTheme.headlineLarge!.copyWith(
-                    color: AppColors.black,
-                    fontSize: AppSizes.font_28 * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      Theme.of(context).textTheme.headlineLarge!.copyWith(
+                            color: AppColors.black,
+                            fontSize: AppSizes.font_28 * 2,
+                            fontWeight: FontWeight.bold,
+                          ),
                 ),
                 FadeAnimatedText(
                   '4',
                   duration: const Duration(milliseconds: 700),
                   textAlign: TextAlign.center,
                   textStyle:
-                  Theme.of(context).textTheme.headlineLarge!.copyWith(
-                    color: AppColors.black,
-                    fontSize: AppSizes.font_28 * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      Theme.of(context).textTheme.headlineLarge!.copyWith(
+                            color: AppColors.black,
+                            fontSize: AppSizes.font_28 * 2,
+                            fontWeight: FontWeight.bold,
+                          ),
                 ),
                 FadeAnimatedText(
                   '3',
                   duration: const Duration(milliseconds: 700),
                   textAlign: TextAlign.center,
                   textStyle:
-                  Theme.of(context).textTheme.headlineLarge!.copyWith(
-                    color: AppColors.black,
-                    fontSize: AppSizes.font_28 * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      Theme.of(context).textTheme.headlineLarge!.copyWith(
+                            color: AppColors.black,
+                            fontSize: AppSizes.font_28 * 2,
+                            fontWeight: FontWeight.bold,
+                          ),
                 ),
                 FadeAnimatedText(
                   '2',
                   duration: const Duration(milliseconds: 700),
                   textAlign: TextAlign.center,
                   textStyle:
-                  Theme.of(context).textTheme.headlineLarge!.copyWith(
-                    color: AppColors.black,
-                    fontSize: AppSizes.font_28 * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      Theme.of(context).textTheme.headlineLarge!.copyWith(
+                            color: AppColors.black,
+                            fontSize: AppSizes.font_28 * 2,
+                            fontWeight: FontWeight.bold,
+                          ),
                 ),
                 FadeAnimatedText(
                   '1',
                   duration: const Duration(milliseconds: 700),
                   textAlign: TextAlign.center,
                   textStyle:
-                  Theme.of(context).textTheme.headlineLarge!.copyWith(
-                    color: AppColors.black,
-                    fontSize: AppSizes.font_28 * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      Theme.of(context).textTheme.headlineLarge!.copyWith(
+                            color: AppColors.black,
+                            fontSize: AppSizes.font_28 * 2,
+                            fontWeight: FontWeight.bold,
+                          ),
                 ),
                 FadeAnimatedText(
                   'Start',
@@ -309,11 +309,11 @@ class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
                   duration: const Duration(milliseconds: 700),
                   textAlign: TextAlign.center,
                   textStyle:
-                  Theme.of(context).textTheme.headlineLarge!.copyWith(
-                    color: AppColors.green,
-                    fontSize: AppSizes.font_28 * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      Theme.of(context).textTheme.headlineLarge!.copyWith(
+                            color: AppColors.green,
+                            fontSize: AppSizes.font_28 * 2,
+                            fontWeight: FontWeight.bold,
+                          ),
                 ),
               ],
             ),
@@ -322,5 +322,4 @@ class _ItemGameNextLevelCountDownState extends State<ItemGameNextLevelCountDown>
       ],
     );
   }
-
 }

@@ -4,9 +4,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_beep/flutter_beep.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_get_info/game_get_info_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_start/game_start_bloc.dart';
 import 'package:quiz_bet/layer_buisness/cubits/game_start_info_cubit/game_start_info_cubit.dart';
 import 'package:quiz_bet/layer_data/models/game_info.dart';
+import 'package:quiz_bet/layer_data/models/game_initial_info.dart';
+import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
+import 'package:quiz_bet/layer_data/repositories/repository_game_page.dart';
+import 'package:quiz_bet/layer_data/services/service_auth_page.dart';
+import 'package:quiz_bet/layer_data/services/service_game_page.dart';
 import 'package:quiz_bet/layer_presentation/common/app_card.dart';
 import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
 import 'package:quiz_bet/layer_presentation/common/app_feedback_button.dart';
@@ -31,8 +37,8 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
 
   @override
   void initState() {
-    context.read<GameStartBloc>().add(
-          StartGameEvent(
+    context.read<GameGetInfoBloc>().add(
+          GetInfoEvent(
             categoryId: widget.categoryId,
           ),
         );
@@ -50,19 +56,19 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
             buildAppBar(),
 
             Expanded(
-              child: BlocBuilder<GameStartBloc, GameStartState>(
+              child: BlocBuilder<GameGetInfoBloc, GameGetInfoState>(
                 builder: (context, state) {
                   ///BUILD LOADING VIEW
-                  if (state is GameStartLoading) {
+                  if (state is GameGetInfoLoadingState) {
                     return const AppLoadingWidget();
                   }
 
                   ///BUILD LOADING ERROR VIEW
-                  if (state is GameStartLoadingError) {
+                  if (state is GameGetInfoLoadingErrorState) {
                     return AppErrorWidget(
                       onTryAgain: () {
-                        context.read<GameStartBloc>().add(
-                              StartGameEvent(
+                        context.read<GameGetInfoBloc>().add(
+                              GetInfoEvent(
                                 categoryId: widget.categoryId,
                               ),
                             );
@@ -71,8 +77,8 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                   }
 
                   ///BUILD LOADED VIEW
-                  if (state is GameStartLoaded) {
-                    return buildLoadedView(context, state.gameInfo);
+                  if (state is GameGetInfoLoadedState) {
+                    return buildLoadedView(context, state.gameInitialInfo);
                   }
 
                   return const SizedBox();
@@ -85,7 +91,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
     );
   }
 
-  Stack buildLoadedView(BuildContext context, GameInfo gameInfo) {
+  Stack buildLoadedView(BuildContext context, GameInitialInfo gameInitialInfo) {
     return Stack(
       children: [
         SingleChildScrollView(
@@ -97,7 +103,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
               ),
 
               ///BUILD HEADER
-              buildHeader(context, gameInfo),
+              buildHeader(context, gameInitialInfo),
 
               SizedBox(
                 height: AppSizes.mp_v_4,
@@ -106,7 +112,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
               ///BUILD GAME INFO CONTAINER
               buildGameInfoContainer(
                 context,
-                gameInfo,
+                gameInitialInfo,
               ),
 
               SizedBox(
@@ -129,7 +135,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
         ///BUILD START BUTTON
         Align(
           alignment: Alignment.bottomCenter,
-          child: buildStartButton(context, gameInfo),
+          child: buildStartButton(context, gameInitialInfo),
         ),
       ],
     );
@@ -211,19 +217,19 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
     );
   }
 
-  buildHeader(BuildContext context, GameInfo gameInfo) {
+  buildHeader(BuildContext context, GameInitialInfo gameInitialInfo) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          gameInfo.category.name.nameAm,
+          gameInitialInfo.category.name.nameAm,
           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: AppColors.darkBlue,
                 fontWeight: FontWeight.bold,
               ),
         ),
         Text(
-          "Question ${gameInfo.levels.first.name.nameAm}",
+          "Question ${gameInitialInfo.levels.first.name.nameAm}",
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
                 color: AppColors.darkBlue,
                 fontWeight: FontWeight.w500,
@@ -233,7 +239,8 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
     );
   }
 
-  buildGameInfoContainer(BuildContext context, GameInfo gameInfo) {
+  buildGameInfoContainer(
+      BuildContext context, GameInitialInfo gameInitialInfo) {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: AppSizes.mp_w_4),
@@ -247,7 +254,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Number of Questions : ${gameInfo.levels.first.questions.length}",
+                "Number of Questions : ${gameInitialInfo.levels.first.questions.length}",
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: AppColors.darkBlue,
                       fontWeight: FontWeight.w500,
@@ -257,7 +264,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                 height: AppSizes.mp_v_1,
               ),
               Text(
-                "Total Odd : ${PagesUtil.getTotalOdd(gameInfo.levels)}",
+                "Total Odd : ${PagesUtil.getTotalOdd(gameInitialInfo.levels)}",
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: AppColors.darkBlue,
                       fontWeight: FontWeight.w500,
@@ -290,7 +297,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                           context
                               .read<GameStartInfoCubit>()
                               .calculateInitialLevelGameInfo(
-                                gameInfo.levels.first.odd,
+                                gameInitialInfo.levels.first.odd,
                                 PagesUtil.getAmountToBe(
                                     textEditingController.text),
                               );
@@ -364,7 +371,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                             context
                                 .read<GameStartInfoCubit>()
                                 .calculateInitialLevelGameInfo(
-                                  gameInfo.levels.first.odd,
+                                  gameInitialInfo.levels.first.odd,
                                   PagesUtil.getAmountToBe(
                                       textEditingController.text),
                                 );
@@ -400,7 +407,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                             context
                                 .read<GameStartInfoCubit>()
                                 .calculateInitialLevelGameInfo(
-                                  gameInfo.levels.first.odd,
+                                  gameInitialInfo.levels.first.odd,
                                   PagesUtil.getAmountToBe(
                                       textEditingController.text),
                                 );
@@ -579,81 +586,101 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
     );
   }
 
-  buildStartButton(BuildContext context, GameInfo gameInfo) {
+  buildStartButton(BuildContext context, GameInitialInfo gameInitialInfo) {
     return BlocBuilder<GameStartInfoCubit, GameStartInfoState>(
-  builder: (context, state) {
-
-
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.white.withOpacity(0.2),
-            offset: const Offset(0, 0),
-            blurRadius: 12.0,
-            spreadRadius: 8.0,
+      builder: (context, state) {
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.white.withOpacity(0.2),
+                offset: const Offset(0, 0),
+                blurRadius: 12.0,
+                spreadRadius: 8.0,
+              ),
+            ],
           ),
-        ],
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: AppSizes.mp_w_8,
-        vertical: AppSizes.mp_v_4,
-      ),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: AppColors.white,
-          backgroundColor: AppColors.darkBlue,
           padding: EdgeInsets.symmetric(
-            vertical: AppSizes.mp_v_2,
+            horizontal: AppSizes.mp_w_8,
+            vertical: AppSizes.mp_v_4,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(
-                AppSizes.radius_6,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              foregroundColor: AppColors.white,
+              backgroundColor: AppColors.darkBlue,
+              padding: EdgeInsets.symmetric(
+                vertical: AppSizes.mp_v_2,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(
+                    AppSizes.radius_6,
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        onPressed: () {
-
-          if(state is InitialLevelGameInfoCalculated){
-            showDialog<bool>(
-              context: context,
-              builder: (context) {
-                return  DialogGameConfirmation(
-                  gameInfo: gameInfo, amountToBet: int.parse(state.placedBet.split('.')[0]), vatPer: double.parse(state.vat),
+            onPressed: () {
+              if (state is InitialLevelGameInfoCalculated) {
+                showDialog<bool>(
+                  context: context,
+                  builder: (context) {
+                    return MultiRepositoryProvider(
+                      providers: [
+                        RepositoryProvider(
+                          create: (context) => GamePageRepository(
+                            service: GamePageService(),
+                          ),
+                        ),
+                        RepositoryProvider(
+                          create: (context) => AuthPageRepository(
+                            service: AuthPageService(),
+                          ),
+                        ),
+                      ],
+                      child: BlocProvider(
+                        create: (context) => GameStartBloc(
+                          gamePageRepository:
+                              context.read<GamePageRepository>(),
+                          authPageRepository:
+                              context.read<AuthPageRepository>(),
+                        ),
+                        child: DialogGameConfirmation(
+                          gameInitialInfo: gameInitialInfo,
+                          amountToBet: int.parse(state.placedBet.split('.')[0]),
+                          vatPer: double.parse(state.vat),
+                        ),
+                      ),
+                    );
+                  },
                 );
-              },
-            );
-          }
-
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Start',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    color: AppColors.white,
-                    fontSize: AppSizes.font_12,
-                    fontWeight: FontWeight.bold,
-                  ),
+              }
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Start',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        color: AppColors.white,
+                        fontSize: AppSizes.font_12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                SizedBox(
+                  width: AppSizes.mp_w_2,
+                ),
+                Icon(
+                  FontAwesomeIcons.solidCircleChevronRight,
+                  size: AppSizes.icon_size_4,
+                  color: AppColors.gold,
+                ),
+              ],
             ),
-            SizedBox(
-              width: AppSizes.mp_w_2,
-            ),
-            Icon(
-              FontAwesomeIcons.solidCircleChevronRight,
-              size: AppSizes.icon_size_4,
-              color: AppColors.gold,
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
-  },
-);
   }
 }

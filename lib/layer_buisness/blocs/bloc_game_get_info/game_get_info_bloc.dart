@@ -2,51 +2,46 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
-import 'package:quiz_bet/layer_data/models/category.dart';
 import 'package:quiz_bet/layer_data/models/game_info.dart';
-import 'package:quiz_bet/layer_data/models/home_page_data.dart';
+import 'package:quiz_bet/layer_data/models/game_initial_info.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_game_page.dart';
 
-part 'game_start_event.dart';
-part 'game_start_state.dart';
+part 'game_get_info_event.dart';
+part 'game_get_info_state.dart';
 
-class GameStartBloc extends Bloc<GameStartEvent, GameStartState> {
+class GameGetInfoBloc extends Bloc<GameGetInfoEvent, GameGetInfoState> {
   final log = Logger();
   final GamePageRepository gamePageRepository;
   final AuthPageRepository authPageRepository;
 
-  GameStartBloc(
+  GameGetInfoBloc(
       {required this.gamePageRepository, required this.authPageRepository})
-      : super(GameStartInitial()) {
-    on<GameStartEvent>((event, emit) async {
-      if (event is StartGameEvent) {
+      : super(GameGetInfoInitial()) {
+    on<GameGetInfoEvent>((event, emit) async{
+
+      if (event is GetInfoEvent) {
         ///EMIT LOADING
-        emit(GameStartLoading());
+        emit(GameGetInfoLoadingState());
 
         try {
-
           ///GET USER ID
           String userId = await authPageRepository.getUserId();
 
-          GameInfo gameInfo = await gamePageRepository.startGameLevel(
-            categoryId: event.category.id,
+          GameInitialInfo gameInitialInfo = await gamePageRepository.getGameInfo(
+            categoryId: event.categoryId,
             userId: userId,
-            amountToBet: event.amountToBet,
-            initialLevelId: event.initialLevelId,
           );
-
 
           ///EMIT LOADED
           emit(
-            GameStartLoaded(gameInfo:gameInfo),
+            GameGetInfoLoadedState(gameInitialInfo:gameInitialInfo),
           );
         } catch (e) {
-         emit( GameStartLoadingError(
-           error: e.toString(),
-         ));
+          emit( GameGetInfoLoadingErrorState(
+            error: e.toString(),
+          ));
         }
       } else {
         throw 'event not known';

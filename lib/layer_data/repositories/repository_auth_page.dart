@@ -1,5 +1,6 @@
 import 'package:quiz_bet/layer_data/models/category.dart';
 import 'package:quiz_bet/layer_data/models/home_page_data.dart';
+import 'package:quiz_bet/layer_data/models/tokens.dart';
 import 'package:quiz_bet/layer_data/services/service_auth_page.dart';
 import 'package:quiz_bet/layer_data/services/service_category_page.dart';
 import 'package:quiz_bet/layer_data/services/service_game_page.dart';
@@ -12,4 +13,21 @@ class AuthPageRepository {
   final AuthPageService service;
 
   Future<String> getUserId() async => service.getUserId();
+
+  Future<String> signUp(
+          {required String name,
+          required String phoneNumber,
+          required String email,
+          required String password}) async =>
+      service.signUp(
+        name: name,
+        phoneNumber: phoneNumber,
+        email: email,
+        password: password,
+      );
+
+  Future<Tokens> signIn({required String phoneNumber, required String password}) async=>service.signIn(  phoneNumber: phoneNumber,
+    password: password,);
+
+  void saveTokens(Tokens tokens) async => service.saveTokens(tokens);
 }

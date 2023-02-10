@@ -87,6 +87,9 @@ class AppErrorWidget extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(
+            height: AppSizes.mp_v_2,
+          ),
         ],
       ),
     );

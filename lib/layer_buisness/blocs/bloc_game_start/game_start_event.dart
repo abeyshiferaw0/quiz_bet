@@ -7,11 +7,14 @@ abstract class GameStartEvent extends Equatable {
 
  class StartGameEvent extends GameStartEvent {
 
-   final String categoryId;
+   final Category category;
+   final int amountToBet;
+   final String initialLevelId;
 
-  const StartGameEvent({required this.categoryId});
+  const
+  StartGameEvent( {required this.amountToBet,required this.category,required this.initialLevelId});
 
   @override
-  List<Object?> get props => [categoryId];
+  List<Object?> get props => [category,amountToBet,initialLevelId];
 
 }

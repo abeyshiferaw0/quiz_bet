@@ -6,5 +6,9 @@ class Constants {
 
   static String hasuraUrl = 'http://139.144.180.66:11005/v1/graphql';
 
+  static String authBox = 'AUTH_BOX';
+
+  static var tokensKey = 'TOKENS_KEY';
+
 }
 

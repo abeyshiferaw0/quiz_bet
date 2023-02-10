@@ -30,3 +30,23 @@ class GamePlayerLevelsDoneState extends GamePlayerState {
   @override
   List<Object> get props => [];
 }
+
+
+class GamePlayerLevelUpdatingState extends GamePlayerState {
+
+  const GamePlayerLevelUpdatingState();
+
+  @override
+  List<Object> get props => [];
+}
+
+class GamePlayerLevelUpdatingErrorState extends GamePlayerState {
+
+ final String error;
+ final GameLevel level;
+
+  const GamePlayerLevelUpdatingErrorState( {required this.level,required this.error});
+
+  @override
+  List<Object> get props => [error,level];
+}

@@ -4,13 +4,28 @@ class GqlGamePage {
   String insertGameQuiz({
     required String categoryId,
     required String userId,
+    required int amountToBet,
+    required String initialLevelId,
   }) {
-    return """
-            mutation insertGameQuiz {
-              insert_game_quiz_one(object: {category_id:"$categoryId",user_id:"$userId"}) {
+    return """            
+            mutation MyMutation {
+              insert_game_quiz_one(object:{category_id:"$categoryId",user_id:"$userId",level_id:"$initialLevelId",amount:"$amountToBet"}){
                 id
               }
-            }
+            }  
+        """;
+  }
+
+  String updateQuizLevel({
+    required String quizId,
+    required String levelId,
+  }) {
+    return """            
+          mutation updateGameQuiz{
+              update_game_quiz_by_pk(pk_columns:{id:"$quizId"},_set:{level_id:"$levelId"}){
+              id
+              }
+          }
         """;
   }
 
@@ -50,13 +65,12 @@ class GqlGamePage {
 """;
   }
 
-
-  String saveGameHistory(String quizId,GameLevel level, int timeTaken) {
-
+  String saveGameHistory(String quizId, GameLevel level, int timeTaken) {
     List<String> objects = [];
 
     level.questions.forEach((element) {
-      objects.add('{quiz_id:"$quizId",question_id:"${element.id}",answer:"${element.choice.usersAnswer!.option}",time_taken:"$timeTaken"}');
+      objects.add(
+          '{quiz_id:"$quizId",question_id:"${element.id}",answer:"${element.choice.usersAnswer!.option}",time_taken:"$timeTaken"}');
     });
 
     print("objects => ${objects.join(",")}");
@@ -71,5 +85,4 @@ class GqlGamePage {
       }
     """;
   }
-
 }

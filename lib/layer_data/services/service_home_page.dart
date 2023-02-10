@@ -24,9 +24,6 @@ class HomePageService {
     try {
       var response = await hasuraConnect.query(gqlHomePage.getHomeData());
 
-      log.i(
-          "getAllCategories response => ${response['data']['game_categoryList']}");
-
       List<Category> categoryList =
           (response['data']['game_categoryList'] as List)
               .map((category) => Category.fromJson(category))

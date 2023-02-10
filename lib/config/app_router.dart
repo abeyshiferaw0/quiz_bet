@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_auth_pages/bloc_sign_in/sign_in_page_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_auth_pages/bloc_sign_up/sign_up_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_category_page/category_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_checker/game_checker_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_get_info/game_get_info_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_start/game_start_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_gmae_history_saver/game_history_saver_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_home_page/home_page_bloc.dart';
@@ -81,10 +84,30 @@ class AppRouter {
         break;
 
       case AppRouterPaths.authSignUp:
-        builder = (_) => const AuthSignUpPage();
+        builder = (_) => RepositoryProvider(
+              create: (context) => AuthPageRepository(
+                service: AuthPageService(),
+              ),
+              child: BlocProvider(
+                create: (context) => SignUpPageBloc(
+                  authPageRepository: context.read<AuthPageRepository>(),
+                ),
+                child: const AuthSignUpPage(),
+              ),
+            );
         break;
       case AppRouterPaths.authSignIn:
-        builder = (_) => const AuthSignInPage();
+        builder = (_) => RepositoryProvider(
+          create: (context) => AuthPageRepository(
+            service: AuthPageService(),
+          ),
+          child: BlocProvider(
+            create: (context) => SignInPageBloc(
+              authPageRepository: context.read<AuthPageRepository>(),
+            ),
+            child: const AuthSignInPage(),
+          ),
+        );
         break;
       case AppRouterPaths.authForgetPass:
         builder = (_) => const AuthForgotPassPage();
@@ -123,13 +146,13 @@ class AppRouter {
               child: MultiBlocProvider(
                 providers: [
                   BlocProvider(
-                    create: (context) => GameStartBloc(
+                    create: (context) => GameStartInfoCubit(),
+                  ),
+                  BlocProvider(
+                    create: (context) => GameGetInfoBloc(
                       gamePageRepository: context.read<GamePageRepository>(),
                       authPageRepository: context.read<AuthPageRepository>(),
                     ),
-                  ),
-                  BlocProvider(
-                    create: (context) => GameStartInfoCubit(),
                   ),
                 ],
                 child: GamePlayerInfoPage(

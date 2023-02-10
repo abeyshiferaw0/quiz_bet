@@ -53,9 +53,7 @@ class GameCheckerBloc extends Bloc<GameCheckerEvent, GameCheckerState> {
                 timeTaken: event.timeTaken,
               ),
             );
-
           } else {
-
             int index = event.gameLevel.questions.indexOf(event.gameQuestion);
             emit(
               GameCheckerShowQuestionState(
@@ -64,7 +62,6 @@ class GameCheckerBloc extends Bloc<GameCheckerEvent, GameCheckerState> {
                 gameLevel: event.gameLevel,
               ),
             );
-
           }
         } else {
           emit(GameCheckerUserForfitState());
@@ -75,10 +72,11 @@ class GameCheckerBloc extends Bloc<GameCheckerEvent, GameCheckerState> {
         emit(
           GameCheckerShowNextLevelCountDownState(
             gameLevel: event.gameLevel,
-            nextLevel: gameInfo.levels
-                .elementAt(gameInfo.levels.indexOf(currentGameLevel)),
-            gameInfo:gameInfo,
-            timeTaken:  event.timeTaken,
+            nextLevel: gameInfo.levels.elementAt(
+              gameInfo.levels.indexOf(currentGameLevel),
+            ),
+            gameInfo: gameInfo,
+            timeTaken: event.timeTaken,
           ),
         );
       }

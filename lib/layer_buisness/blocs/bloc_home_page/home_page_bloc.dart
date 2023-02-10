@@ -28,8 +28,10 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
             HomePageLoaded(homePageData: homePageData),
           );
         } catch (e) {
-          HomePageLoadingError(
-            error: e.toString(),
+          emit(
+            HomePageLoadingError(
+              error: e.toString(),
+            ),
           );
         }
       } else {

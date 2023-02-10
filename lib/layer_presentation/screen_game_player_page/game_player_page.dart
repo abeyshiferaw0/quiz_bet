@@ -10,6 +10,8 @@ import 'package:quiz_bet/layer_buisness/blocs/bloc_game_checker/game_checker_blo
 import 'package:quiz_bet/layer_buisness/blocs/game_player_page/game_player_bloc.dart';
 import 'package:quiz_bet/layer_data/models/game_info.dart';
 import 'package:quiz_bet/layer_data/models/game_level.dart';
+import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
+import 'package:quiz_bet/layer_presentation/common/app_loading_widget.dart';
 import 'package:quiz_bet/layer_presentation/screen_game_player_page/widgets/dialog_level_failure.dart';
 import 'package:quiz_bet/layer_presentation/screen_game_player_page/widgets/item_game_levels_complited.dart';
 import 'package:quiz_bet/layer_presentation/screen_game_player_page/widgets/item_game_next_level_count_down.dart';
@@ -83,6 +85,24 @@ class _GamePlayerPageState extends State<GamePlayerPage> {
             if (state is GamePlayerLevelsDoneState) {
               return buildGameLevelComplitedView(context);
             }
+
+            if (state is GamePlayerLevelUpdatingState) {
+              return AppLoadingWidget();
+            }
+            if (state is GamePlayerLevelUpdatingErrorState) {
+              return AppErrorWidget(onTryAgain: () {
+                ///START PLAYING INITIAL GAME LEVEL
+                context.read<GamePlayerBloc>().add(
+                  GameLevelUpdateEventEvent(
+                    gameInfo: widget.gameInfo,
+                    amountToBet: widget.amountToBet,
+                    vatPer: widget.vatPer, nextLevel: state.level,
+                  ),
+                );
+              },);
+            }
+
+
 
             return const SizedBox();
           },
