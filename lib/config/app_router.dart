@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_auth_pages/bloc_forgot_password/forgot_password_page_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_auth_pages/bloc_password_reset/password_reset_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_auth_pages/bloc_sign_in/sign_in_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_auth_pages/bloc_sign_up/sign_up_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_category_page/category_page_bloc.dart';
@@ -22,6 +24,7 @@ import 'package:quiz_bet/layer_data/services/service_home_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_add_members/add_member_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_all_categories/all_categories_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_auth_pages/auth_forgot_pass_page.dart';
+import 'package:quiz_bet/layer_presentation/screen_auth_pages/auth_password_reset_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_auth_pages/auth_pin_input_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_auth_pages/auth_sign_in_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_auth_pages/auth_sign_up_page.dart';
@@ -55,6 +58,7 @@ class AppRouterPaths {
   static const String authSignIn = '/auth_sign_in';
   static const String authForgetPass = '/auth_forgot_pass';
   static const String authInputPin = '/auth_input_pin';
+  static const String authPasswordReset = '/password_reset';
 
   static const String mainScreen = 'main_screen';
 
@@ -98,22 +102,54 @@ class AppRouter {
         break;
       case AppRouterPaths.authSignIn:
         builder = (_) => RepositoryProvider(
-          create: (context) => AuthPageRepository(
-            service: AuthPageService(),
-          ),
-          child: BlocProvider(
-            create: (context) => SignInPageBloc(
-              authPageRepository: context.read<AuthPageRepository>(),
-            ),
-            child: const AuthSignInPage(),
-          ),
-        );
+              create: (context) => AuthPageRepository(
+                service: AuthPageService(),
+              ),
+              child: BlocProvider(
+                create: (context) => SignInPageBloc(
+                  authPageRepository: context.read<AuthPageRepository>(),
+                ),
+                child: const AuthSignInPage(),
+              ),
+            );
         break;
       case AppRouterPaths.authForgetPass:
-        builder = (_) => const AuthForgotPassPage();
+        builder = (_) => RepositoryProvider(
+              create: (context) => AuthPageRepository(
+                service: AuthPageService(),
+              ),
+              child: BlocProvider(
+                create: (context) => ForgotPasswordPageBloc(
+                  authPageRepository: context.read<AuthPageRepository>(),
+                ),
+                child: const AuthForgotPassPage(),
+              ),
+            );
         break;
       case AppRouterPaths.authInputPin:
-        builder = (_) => const AuthPinInputPagePage();
+        final args = settings.arguments as ScreenArguments;
+
+        builder = (_) => AuthPinInputPagePage(
+               phoneNumber: args.data['phone_number'],
+            );
+
+        break;
+      case AppRouterPaths.authPasswordReset:
+        final args = settings.arguments as ScreenArguments;
+
+        builder = (_) => RepositoryProvider(
+              create: (context) => AuthPageRepository(
+                service: AuthPageService(),
+              ),
+              child: BlocProvider(
+                create: (context) => PasswordResetPageBloc(
+                  authPageRepository: context.read<AuthPageRepository>(),
+                ),
+                child: AuthPasswordResetPage(
+                  phoneNumber: args.data['phone_number'],
+                ),
+              ),
+            );
         break;
       case AppRouterPaths.mainScreen:
         builder = (_) => RepositoryProvider(

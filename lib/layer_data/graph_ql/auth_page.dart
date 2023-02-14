@@ -18,13 +18,49 @@ class AuthPage {
   String signIn({required String password, required String phoneNumber}) {
     return """
           mutation MyMutation2 {
-              signIn(password:"123321",phoneNumber:"123456"){
+              signIn(password:"$password",phoneNumber:"$phoneNumber"){
                 tokens{
                   access_token
                   refresh_token
                 }
+                 data{
+                    id
+                    email
+                    phoneNumber
+                    langCode
+                    role
+                 }
             }
           }
+    """;
+  }
+
+  String forgotPassword({required String phoneNumber}) {
+    return """
+       mutation forgotPassword {
+         forgetPassword(phoneNumber:"${phoneNumber}"){
+           message
+         }
+       }
+    """;
+  }
+
+  String resetPassword({required String phoneNumber, required newPassword, required String otp}) {
+
+    print("object ${"""
+         mutation MyMutation2 {
+           resetPassword(code:"$otp",password:"$newPassword",phoneNumber:"$phoneNumber"){
+             message
+           }
+         }
+    """}");
+
+    return """
+         mutation MyMutation2 {
+           resetPassword(code:"$otp",password:"$newPassword",phoneNumber:"$phoneNumber"){
+             message
+           }
+         }
     """;
   }
 }

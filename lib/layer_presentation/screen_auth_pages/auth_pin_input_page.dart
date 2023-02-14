@@ -1,19 +1,20 @@
 import 'dart:async';
 
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:quiz_bet/config/app_router.dart';
 import 'package:quiz_bet/layer_presentation/common/app_card.dart';
-import 'package:quiz_bet/layer_presentation/common/app_feedback_button.dart';
 import 'package:quiz_bet/theme/app_assets.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 
 class AuthPinInputPagePage extends StatefulWidget {
-  const AuthPinInputPagePage({Key? key}) : super(key: key);
+  const AuthPinInputPagePage({Key? key,  required this.phoneNumber}) : super(key: key);
+
+  final String phoneNumber;
 
   @override
   State<AuthPinInputPagePage> createState() => _AuthPinInputPagePageState();
@@ -42,33 +43,31 @@ class _AuthPinInputPagePageState extends State<AuthPinInputPagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(
-              height: AppSizes.mp_v_2,
-            ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: AppSizes.mp_v_8,
+              ),
 
-            Expanded(
-              child: SizedBox(),
-            ),
+              ///BUILD APP LOGO
+              buildAppLogo(),
 
-            ///BUILD APP LOGO
-            buildAppLogo(),
+              SizedBox(
+                height: AppSizes.mp_v_6,
+              ),
 
-            Expanded(
-              child: SizedBox(),
-            ),
+              ///BUILD QUESTION ANIMATION
+              buildLockAnimation(),
 
-            ///BUILD QUESTION ANIMATION
-            buildLockAnimation(),
+              SizedBox(
+                height: AppSizes.mp_v_8,
+              ),
 
-            Expanded(
-              child: SizedBox(),
-            ),
-
-            ///BUILD INPUT FORM
-            buildInputForm(),
-          ],
+              ///BUILD INPUT FORM
+              buildInputForm(),
+            ],
+          ),
         ),
       ),
     );
@@ -148,11 +147,12 @@ class _AuthPinInputPagePageState extends State<AuthPinInputPagePage> {
                   animationType: AnimationType.fade,
                   validator: (v) {
                     if (v!.length < 3) {
-                      return "I'm from validator";
+                      return "";
                     } else {
                       return null;
                     }
                   },
+
                   pinTheme: PinTheme(
                     shape: PinCodeFieldShape.underline,
                     fieldHeight: 50,
@@ -213,7 +213,30 @@ class _AuthPinInputPagePageState extends State<AuthPinInputPagePage> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, AppRouterPaths.authInputPin);
+                    if (formKey.currentState!.validate()) {
+                      if (textEditingController.text == '1234') {
+                        Navigator.pushNamed(
+                          context,
+                          AppRouterPaths.authPasswordReset,
+                          arguments: ScreenArguments(
+                            data: {
+                              'phone_number':widget.phoneNumber,
+                              'otp':textEditingController.text,
+                            },
+                          ),
+                        );
+                      } else {
+                        AnimatedSnackBar.material(
+                          'Pin not correct',
+                          type: AnimatedSnackBarType.error,
+                        ).show(context);
+                      }
+                    } else {
+                      AnimatedSnackBar.material(
+                        'Pin not filled',
+                        type: AnimatedSnackBarType.info,
+                      ).show(context);
+                    }
                   },
                   child: Text(
                     'Verify',

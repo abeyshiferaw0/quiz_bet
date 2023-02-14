@@ -10,5 +10,7 @@ class Constants {
 
   static var tokensKey = 'TOKENS_KEY';
 
+  static var userKey = 'TOKEN_KEY';
+
 }
 

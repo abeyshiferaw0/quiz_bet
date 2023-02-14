@@ -4,7 +4,9 @@ import 'package:quiz_bet/config/app_hive_boxes.dart';
 import 'package:quiz_bet/config/constants.dart';
 import 'package:quiz_bet/layer_data/graph_ql/auth_page.dart';
 import 'package:quiz_bet/layer_data/graph_ql/gql_category_page.dart';
+import 'package:quiz_bet/layer_data/models/sign_in_data.dart';
 import 'package:quiz_bet/layer_data/models/tokens.dart';
+import 'package:quiz_bet/layer_data/models/user.dart';
 
 class AuthPageService {
   final log = Logger();
@@ -49,7 +51,8 @@ class AuthPageService {
     }
   }
 
-  Future<Tokens> signIn({required String phoneNumber, required String password}) async{
+  Future<SignInData> signIn({required String phoneNumber, required String password}) async{
+
 
     try {
       ///INSERT GAME QUIZ
@@ -62,7 +65,9 @@ class AuthPageService {
 
       Tokens tokens = Tokens.fromJson(response['data']['signIn']['tokens']);
 
-      return tokens;
+      User user = User.fromJson(response['data']['signIn']['data']);
+
+      return SignInData(tokens: tokens, user: user,);
 
     } catch (e) {
       log.e("signIn => ${e.toString()}");
@@ -76,4 +81,50 @@ class AuthPageService {
 
     print("TOKENNN => ${AppHiveBoxes.instance.authBox.get(Constants.tokensKey)}");
   }
+
+  Future<void> forgotPassword(String phoneNumber) async{
+    try {
+      ///INSERT GAME QUIZ
+      var response = await hasuraConnect.mutation(
+        authPage.forgotPassword(
+          phoneNumber: phoneNumber,
+        ),
+      );
+
+
+      return ;
+
+    } catch (e) {
+      log.e("forgotPassword => ${e.toString()}");
+      rethrow;
+    }
+  }
+
+  resetPassword({required String phoneNumber, required newPassword, required String otp}) async{
+    try {
+      ///INSERT GAME QUIZ
+      var response = await hasuraConnect.mutation(
+        authPage.resetPassword(
+          phoneNumber: phoneNumber,
+          newPassword: newPassword,
+          otp: otp,
+        ),
+      );
+
+
+      return response;
+
+    } catch (e) {
+      log.e("forgotPassword => ${e.toString()}");
+      rethrow;
+    }
+  }
+
+  saveUser(User user) {
+    AppHiveBoxes.instance.authBox.put(Constants.userKey, user);
+
+
+    print("USERRRR => ${AppHiveBoxes.instance.authBox.get(Constants.userKey)}");
+  }
+
 }

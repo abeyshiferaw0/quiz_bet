@@ -9,6 +9,7 @@ import 'package:quiz_bet/layer_buisness/blocs/bloc_auth_pages/bloc_sign_in/sign_
 import 'package:quiz_bet/layer_buisness/blocs/bloc_auth_pages/bloc_sign_up/sign_up_page_bloc.dart';
 import 'package:quiz_bet/layer_presentation/common/app_card.dart';
 import 'package:quiz_bet/layer_presentation/common/app_feedback_button.dart';
+import 'package:quiz_bet/layer_presentation/common/app_loading_widget.dart';
 import 'package:quiz_bet/layer_presentation/common/app_text_input.dart';
 import 'package:quiz_bet/theme/app_assets.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
@@ -32,29 +33,67 @@ class _AuthSignInPageState extends State<AuthSignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: AppSizes.mp_v_10,),
+    return BlocListener<SignInPageBloc, SignInPageState>(
+      listener: (context, state) {
+        if (state is SignInPageLoadedState) {
+          ///SIGN UP SUCCESSFULLY
+          AnimatedSnackBar.material(
+            'Logged In',
+            type: AnimatedSnackBarType.success,
+          ).show(context);
 
-                ///BUILD APP LOGO
-                buildAppLogo(),
+          ///POP BACK TO LOGIN PAGE
+          Navigator.popAndPushNamed(context, AppRouterPaths.mainScreen);
+        }
 
-                SizedBox(height: AppSizes.mp_v_10,),
+        if (state is SignInPageLoadingErrorState) {
+          ///SIGN UP SUCCESSFULLY
+          AnimatedSnackBar.material(
+            'Network error, ty again',
+            type: AnimatedSnackBarType.error,
+          ).show(context);
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: BlocBuilder<SignInPageBloc, SignInPageState>(
+              builder: (context, state) {
+                if (state is SignInPageLoadedState) {
+                  return AppLoadingWidget();
+                }
 
-                ///BUILD INPUT FORM
-                buildInputForm(),
-              ],
+                return buildMainView();
+              },
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  SingleChildScrollView buildMainView() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(
+            height: AppSizes.mp_v_10,
+          ),
+
+          ///BUILD APP LOGO
+          buildAppLogo(),
+
+          SizedBox(
+            height: AppSizes.mp_v_10,
+          ),
+
+          ///BUILD INPUT FORM
+          buildInputForm(),
+        ],
       ),
     );
   }
@@ -130,7 +169,8 @@ class _AuthSignInPageState extends State<AuthSignInPage> {
                 ),
                 AppTextInput(
                   textEditingController: passwordTextEditingController,
-                  validator: ValidationBuilder().minLength(6).maxLength(25).build(),
+                  validator:
+                      ValidationBuilder().minLength(6).maxLength(25).build(),
                   hint: "Password",
                   prefixIcon: FontAwesomeIcons.solidLockKeyhole,
                   isPassword: true,
@@ -182,10 +222,16 @@ class _AuthSignInPageState extends State<AuthSignInPage> {
                       if (_form.currentState!.validate()) {
                         context.read<SignInPageBloc>().add(
                               SignInEvent(
-                                phoneNumber: phoneTextEditingController.text,
+                                phoneNumber: ValidatorUtil.formatPhoneNumber(
+                                    phoneTextEditingController.text),
                                 password: passwordTextEditingController.text,
                               ),
                             );
+                      }else{
+                        AnimatedSnackBar.material(
+                          'Form not completed',
+                          type: AnimatedSnackBarType.info,
+                        ).show(context);
                       }
                     },
                     child: Text(

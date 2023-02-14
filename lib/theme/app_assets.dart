@@ -31,7 +31,7 @@ class AppAssets {
   static const String errorCancelLottie = "assets/lottie/error_cancel.json";
   static const String questionLottie = "assets/lottie/question.json";
   static const String lockLottie = "assets/lottie/lock.json";
-
+  static const String createNewPasswordLottie = "assets/lottie/create_new_password.json";
 
 
 

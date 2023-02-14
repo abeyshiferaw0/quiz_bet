@@ -14,6 +14,7 @@ import 'package:quiz_bet/layer_presentation/common/app_text_input.dart';
 import 'package:quiz_bet/theme/app_assets.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
+import 'package:quiz_bet/utils/validator_util.dart';
 import 'package:sizer/sizer.dart';
 
 class AuthSignUpPage extends StatefulWidget {
@@ -60,7 +61,6 @@ class _AuthSignUpPageState extends State<AuthSignUpPage> {
             'Network error, ty again',
             type: AnimatedSnackBarType.error,
           ).show(context);
-
         }
 
         if (state is SignUpAccountExistsState) {
@@ -70,18 +70,18 @@ class _AuthSignUpPageState extends State<AuthSignUpPage> {
             "Account exists try loging in or resting password",
             type: AnimatedSnackBarType.error,
           ).show(context);
-
         }
-
-
       },
       child: Scaffold(
-        resizeToAvoidBottomInset:false,
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: BlocBuilder<SignUpPageBloc, SignUpPageState>(
             builder: (context, state) {
+
               if (state is SignUpLoadingState) {
-                return Center(child: AppLoadingWidget());
+                return const Center(
+                  child: AppLoadingWidget(),
+                );
               }
 
               // if (state is SignUpLoadingErrorState) {
@@ -109,29 +109,30 @@ class _AuthSignUpPageState extends State<AuthSignUpPage> {
     );
   }
 
-   buildMainView() {
+  buildMainView() {
     return Padding(
-      padding:  EdgeInsets.only(bottom:  MediaQuery.of(context).viewInsets.bottom + 10,),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
-        physics: ClampingScrollPhysics(),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: AppSizes.mp_v_8,
-                    ),
+        child: Column(
+          children: [
+            SizedBox(
+              height: AppSizes.mp_v_8,
+            ),
 
-                    ///BUILD APP LOGO
-                    buildAppLogo(),
+            ///BUILD APP LOGO
+            buildAppLogo(),
 
-                    SizedBox(
-                      height: AppSizes.mp_v_8,
-                    ),
+            SizedBox(
+              height: AppSizes.mp_v_8,
+            ),
 
-                    ///BUILD INPUT FORM
-                    buildInputForm(),
-                  ],
-                ),
-              ),
+            ///BUILD INPUT FORM
+            buildInputForm(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -209,7 +210,17 @@ class _AuthSignUpPageState extends State<AuthSignUpPage> {
                 ),
                 AppTextInput(
                   textEditingController: phoneNumberTextEditingController,
-                  validator: ValidationBuilder().phone().build(),
+                  validator: (String? value) {
+                    if (value == null) {
+                      return "Please Provide valid Phone Number!";
+                    }
+
+                    if (!ValidatorUtil.isPhoneValidEthiopian(value)) {
+                      return "Please Provide valid Phone Number!";
+                    }
+
+                    return null;
+                  },
                   hint: "Phone Number",
                   prefixIcon: FontAwesomeIcons.solidPhone,
                 ),
@@ -269,12 +280,13 @@ class _AuthSignUpPageState extends State<AuthSignUpPage> {
                       if (_form.currentState!.validate()) {
                         if (passwordTextEditingController.text ==
                             confirmPasswordTextEditingController.text) {
+
                           context.read<SignUpPageBloc>().add(
                                 SignUpEvent(
                                   name:
                                       '${firstNameTextEditingController.text} ${lastNameTextEditingController.text}',
-                                  phoneNumber:
-                                      phoneNumberTextEditingController.text,
+                                  phoneNumber:ValidatorUtil.formatPhoneNumber(phoneNumberTextEditingController.text)
+                                  ,
                                   password: passwordTextEditingController.text,
                                   email: emailTextEditingController.text,
                                 ),

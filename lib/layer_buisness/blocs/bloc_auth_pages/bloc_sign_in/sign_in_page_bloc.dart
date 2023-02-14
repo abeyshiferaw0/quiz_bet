@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:logger/logger.dart';
+import 'package:quiz_bet/layer_data/models/sign_in_data.dart';
 import 'package:quiz_bet/layer_data/models/tokens.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
 
@@ -21,14 +22,20 @@ class SignInPageBloc extends Bloc<SignInPageEvent, SignInPageState> {
           SignInPageLoadingState(),
         );
 
+        SignInData signInData = await authPageRepository.signIn(
+          phoneNumber: event.phoneNumber,
+          password: event.password,
+        );
+
         try {
-          Tokens tokens = await authPageRepository.signIn(
+          SignInData signInData = await authPageRepository.signIn(
             phoneNumber: event.phoneNumber,
             password: event.password,
           );
 
-          ///SAVE ACCESS AND REFRESH TOKENS
-          authPageRepository.saveTokens(tokens);
+          ///SAVE ACCESS , REFRESH TOKENS AND USER DATA
+          authPageRepository.saveTokens(signInData.tokens);
+          authPageRepository.saveUser(signInData.user);
 
           emit(
             SignInPageLoadedState(),
