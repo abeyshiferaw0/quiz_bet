@@ -126,4 +126,26 @@ class AuthPageService {
   saveTokens(Tokens tokens) {
     AppHiveBoxes.instance.authBox.put(Constants.tokensKey, tokens);
   }
+
+  bool isUserLoggedIn() {
+
+    try{
+      Tokens tokens = AppHiveBoxes.instance.authBox.get(Constants.tokensKey) as Tokens;
+      User user = AppHiveBoxes.instance.authBox.get(Constants.userKey) as User;
+
+      if(tokens.accessToken.isEmpty||tokens.refreshToken.isEmpty){
+        return false;
+      }
+
+      if(user.id.isEmpty){
+        return false;
+      }
+
+      return true;
+    }catch(e){
+      return false;
+    }
+
+
+  }
 }

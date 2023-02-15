@@ -55,7 +55,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         ),
         OnBoardingPageThree(
           onPrvTap: () {
-            Navigator.pushNamed(
+            Navigator.popAndPushNamed(
               context,
               AppRouterPaths.authSignIn,
             );

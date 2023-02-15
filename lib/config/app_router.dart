@@ -259,6 +259,7 @@ class AppRouter {
               ),
             );
         break;
+
       case AppRouterPaths.allCategoriesPage:
         builder = (_) => RepositoryProvider(
               create: (context) => CategoryPageRepository(
