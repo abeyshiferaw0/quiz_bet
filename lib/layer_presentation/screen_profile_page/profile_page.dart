@@ -1,8 +1,13 @@
 import 'package:bouncing_button/bouncing_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:glassmorphism_ui/glassmorphism_ui.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_profile_page/profile_page_bloc.dart';
+import 'package:quiz_bet/layer_data/models/profile_page_data.dart';
 import 'package:quiz_bet/layer_presentation/common/app_card.dart';
+import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
+import 'package:quiz_bet/layer_presentation/common/app_loading_widget.dart';
 import 'package:quiz_bet/layer_presentation/screen_profile_page/widgets/item_quiz_history.dart';
 import 'package:quiz_bet/theme/app_assets.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
@@ -18,35 +23,65 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   @override
+  void initState() {
+    context.read<ProfilePageBloc>().add(LoadProfilePageEvent());
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ///BUILD PROFILE HEADER
-            buildProfileHeader(),
+      body: BlocBuilder<ProfilePageBloc, ProfilePageState>(
+          builder: (context, state) {
+        if (state is ProfilePageLoading) {
+          return const AppLoadingWidget();
+        }
 
-            SizedBox(
-              height: AppSizes.mp_v_1,
-            ),
+        if (state is ProfilePageLoadingFailed) {
+          return AppErrorWidget(
+            onTryAgain: () {
+              context.read<ProfilePageBloc>().add(LoadProfilePageEvent());
+            },
+          );
+        }
 
-            ///BUILD WALLET CONTAINER
-            buildWalletContainer(context),
+        if (state is ProfilePageLoaded) {
+          return buildLoadedView(context,state.profilePageData);
+        }
 
-            SizedBox(
-              height: AppSizes.mp_v_1,
-            ),
+        return SizedBox();
+      }),
+    );
+  }
 
-            ///BUILD QUIZ HISTORY
-            buildQuizHistory(),
-          ],
-        ),
+  SingleChildScrollView buildLoadedView(BuildContext context, ProfilePageData profilePageData) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ///BUILD PROFILE HEADER
+          buildProfileHeader(profilePageData),
+
+          SizedBox(
+            height: AppSizes.mp_v_1,
+          ),
+
+          ///BUILD WALLET CONTAINER
+          buildWalletContainer(context,profilePageData),
+
+          SizedBox(
+            height: AppSizes.mp_v_1,
+          ),
+
+          ///BUILD QUIZ HISTORY
+          buildQuizHistory(),
+        ],
       ),
     );
   }
 
-  Container buildWalletContainer(BuildContext context) {
+  Container buildWalletContainer(BuildContext context, ProfilePageData profilePageData) {
     return Container(
       width: double.infinity,
       height: 22.h,
@@ -109,7 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                         ),
                         Text(
-                          "150.00 ETB".toUpperCase(),
+                          "${profilePageData.balance.toStringAsFixed(2)} ETB".toUpperCase(),
                           style:
                               Theme.of(context).textTheme.bodyLarge!.copyWith(
                                     color: AppColors.darkGold,
@@ -211,7 +246,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  buildProfileHeader() {
+  buildProfileHeader(ProfilePageData profilePageData) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -348,7 +383,7 @@ class _ProfilePageState extends State<ProfilePage> {
           height: AppSizes.mp_v_2,
         ),
         Text(
-          "Hamelmal Nigusse",
+          "${profilePageData.user.phoneNumber}",
           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                 color: AppColors.gold,
                 fontWeight: FontWeight.w600,
@@ -358,7 +393,7 @@ class _ProfilePageState extends State<ProfilePage> {
           height: AppSizes.mp_v_1 / 2,
         ),
         Text(
-          "ID: 452245422ß",
+          "ID: ${profilePageData.user.id}",
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
                 color: AppColors.darkBlue,
                 fontSize: AppSizes.font_9,
@@ -401,12 +436,17 @@ class _ProfilePageState extends State<ProfilePage> {
                 ListView.separated(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 0.0,vertical: AppSizes.mp_v_2,),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 0.0,
+                    vertical: AppSizes.mp_v_2,
+                  ),
                   itemBuilder: (context, index) {
                     return ItemQuizHistory();
                   },
                   separatorBuilder: (context, index) {
-                    return SizedBox(height: AppSizes.mp_v_1,);
+                    return SizedBox(
+                      height: AppSizes.mp_v_1,
+                    );
                   },
                   itemCount: 12,
                 ),

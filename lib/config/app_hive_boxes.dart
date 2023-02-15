@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
 import 'package:quiz_bet/config/constants.dart';
 import 'package:quiz_bet/layer_data/models/tokens.dart';
+import 'package:quiz_bet/layer_data/models/user.dart';
 
 class AppHiveBoxes {
   ///BOXES
@@ -21,7 +22,7 @@ class AppHiveBoxes {
     ///REGISTER HIVE ADAPTERS
     await initHiveAdapters();
 
-    authBox = await Hive.openBox<Tokens>(
+    authBox = await Hive.openBox<dynamic>(
       Constants.authBox,
     );
 
@@ -38,5 +39,6 @@ class AppHiveBoxes {
     Hive.init(directory.path);
 
     Hive.registerAdapter(TokensAdapter());
+    Hive.registerAdapter(UserAdapter());
   }
 }

@@ -11,16 +11,19 @@ import 'package:quiz_bet/layer_buisness/blocs/bloc_game_get_info/game_get_info_b
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_start/game_start_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_gmae_history_saver/game_history_saver_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_home_page/home_page_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_profile_page/profile_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/game_player_page/game_player_bloc.dart';
 import 'package:quiz_bet/layer_buisness/cubits/game_start_info_cubit/game_start_info_cubit.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_category_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_game_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_home_page.dart';
+import 'package:quiz_bet/layer_data/repositories/repository_profile_page.dart';
 import 'package:quiz_bet/layer_data/services/service_auth_page.dart';
 import 'package:quiz_bet/layer_data/services/service_category_page.dart';
 import 'package:quiz_bet/layer_data/services/service_game_page.dart';
 import 'package:quiz_bet/layer_data/services/service_home_page.dart';
+import 'package:quiz_bet/layer_data/services/service_profile_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_add_members/add_member_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_all_categories/all_categories_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_auth_pages/auth_forgot_pass_page.dart';
@@ -130,7 +133,7 @@ class AppRouter {
         final args = settings.arguments as ScreenArguments;
 
         builder = (_) => AuthPinInputPagePage(
-               phoneNumber: args.data['phone_number'],
+              phoneNumber: args.data['phone_number'],
             );
 
         break;
@@ -245,7 +248,16 @@ class AppRouter {
             );
         break;
       case AppRouterPaths.profilePage:
-        builder = (_) => const ProfilePage();
+        builder = (_) => RepositoryProvider(
+              create: (context) =>
+                  ProfilePageRepository(service: ProfilePageService()),
+              child: BlocProvider(
+                create: (context) => ProfilePageBloc(
+                    profilePageRepository:
+                        context.read<ProfilePageRepository>()),
+                child: ProfilePage(),
+              ),
+            );
         break;
       case AppRouterPaths.allCategoriesPage:
         builder = (_) => RepositoryProvider(

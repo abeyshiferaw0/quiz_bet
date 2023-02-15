@@ -61,9 +61,27 @@ class GqlGamePage {
               }
             }
           }
+          system_percentage(where:{code:{_eq:VAT}}){
+            name
+            percentage
+          }
         }        
 """;
   }
+
+
+  String getUserBalace() {
+    return """
+        mutation mmm{
+            getWallet{
+              balance
+            }
+        }            
+    """;
+  }
+
+
+
 
   String saveGameHistory(String quizId, GameLevel level, int timeTaken) {
     List<String> objects = [];

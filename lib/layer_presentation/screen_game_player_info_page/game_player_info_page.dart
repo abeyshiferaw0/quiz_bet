@@ -1,9 +1,11 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bouncing_button/bouncing_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_beep/flutter_beep.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:quiz_bet/config/app_router.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_get_info/game_get_info_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_start/game_start_bloc.dart';
 import 'package:quiz_bet/layer_buisness/cubits/game_start_info_cubit/game_start_info_cubit.dart';
@@ -17,6 +19,7 @@ import 'package:quiz_bet/layer_presentation/common/app_card.dart';
 import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
 import 'package:quiz_bet/layer_presentation/common/app_feedback_button.dart';
 import 'package:quiz_bet/layer_presentation/common/app_loading_widget.dart';
+import 'package:quiz_bet/layer_presentation/screen_game_player_info_page/widgets/dialog_balance_insufucent.dart';
 import 'package:quiz_bet/layer_presentation/screen_game_player_info_page/widgets/dialog_game_confirmation.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
@@ -56,7 +59,30 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
             buildAppBar(),
 
             Expanded(
-              child: BlocBuilder<GameGetInfoBloc, GameGetInfoState>(
+              child: BlocConsumer<GameGetInfoBloc, GameGetInfoState>(
+                listener: (context, state) {
+                  if (state is GameGetInfoLoadedState) {
+                    ///IF USER BALANCE IS ZERO KICK OF GAME STARTING PAGE
+                    if (state.gameInitialInfo.balance < 1) {
+                      Navigator.pop(context);
+                      showDialog<bool>(
+                        context: context,
+                        builder: (context) {
+                          return DialogBalanceInsuficent(
+                            onWalletRecharge: () {
+                              Navigator.pop(context);
+
+                              Navigator.pushNamed(
+                                context,
+                                AppRouterPaths.profilePage,
+                              );
+                            },
+                          );
+                        },
+                      );
+                    }
+                  }
+                },
                 builder: (context, state) {
                   ///BUILD LOADING VIEW
                   if (state is GameGetInfoLoadingState) {
@@ -120,7 +146,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
               ),
 
               ///BUILD PRIZE INFO CONTAINER
-              buildGamepPrizeContainer(context),
+              buildGamepPrizeContainer(context, gameInitialInfo),
 
               SizedBox(
                 height: AppSizes.mp_v_2,
@@ -277,6 +303,17 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
               SizedBox(
                 height: AppSizes.mp_v_2,
               ),
+              Text(
+                "MAX ${gameInitialInfo.balance.toStringAsFixed(2)} BIRR"
+                    .toUpperCase(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.green,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              SizedBox(
+                height: AppSizes.mp_v_2,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -299,7 +336,10 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                               .calculateInitialLevelGameInfo(
                                 gameInitialInfo.levels.first.odd,
                                 PagesUtil.getAmountToBe(
-                                    textEditingController.text),
+                                  textEditingController.text,
+                                ),
+                                gameInitialInfo.vatPercentage,
+                                gameInitialInfo.balance,
                               );
                         },
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
@@ -366,15 +406,31 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                         child: AppButtonFeedBack(
                           onTap: () {
                             FlutterBeep.beep();
-                            textEditingController.text =
-                                "${PagesUtil.getIncrementedBid(textEditingController.text)}";
-                            context
-                                .read<GameStartInfoCubit>()
-                                .calculateInitialLevelGameInfo(
-                                  gameInitialInfo.levels.first.odd,
-                                  PagesUtil.getAmountToBe(
-                                      textEditingController.text),
-                                );
+
+                            ///IF MAX (BALANCE IS REACHED DON'T INCREMENT)
+                            if (PagesUtil.getIncrementedBid(
+                                        textEditingController.text)
+                                    .toDouble() >
+                                gameInitialInfo.balance) {
+                              ///CAN ADD MORE
+                              AnimatedSnackBar.material(
+                                'Maximum amount reached',
+                                type: AnimatedSnackBarType.warning,
+                              ).show(context);
+                            } else {
+                              textEditingController.text =
+                                  "${PagesUtil.getIncrementedBid(textEditingController.text)}";
+                              context
+                                  .read<GameStartInfoCubit>()
+                                  .calculateInitialLevelGameInfo(
+                                    gameInitialInfo.levels.first.odd,
+                                    PagesUtil.getAmountToBe(
+                                      textEditingController.text,
+                                    ),
+                                    gameInitialInfo.vatPercentage,
+                                    gameInitialInfo.balance,
+                                  );
+                            }
                           },
                           child: Padding(
                             padding: EdgeInsets.symmetric(
@@ -409,7 +465,10 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                                 .calculateInitialLevelGameInfo(
                                   gameInitialInfo.levels.first.odd,
                                   PagesUtil.getAmountToBe(
-                                      textEditingController.text),
+                                    textEditingController.text,
+                                  ),
+                                  gameInitialInfo.vatPercentage,
+                                  gameInitialInfo.balance,
                                 );
                           },
                           child: Padding(
@@ -441,7 +500,8 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
     );
   }
 
-  buildGamepPrizeContainer(BuildContext context) {
+  buildGamepPrizeContainer(
+      BuildContext context, GameInitialInfo gameInitialInfo) {
     return BlocBuilder<GameStartInfoCubit, GameStartInfoState>(
       builder: (context, state) {
         return Container(
@@ -475,7 +535,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                   SizedBox(height: AppSizes.mp_v_1),
                   buildInfoItem(
                     context,
-                    "VAT 15%",
+                    "VAT ${gameInitialInfo.vatPercentage}%",
                     "${(state is InitialLevelGameInfoCalculated) ? state.vat : '--'} ETB",
                     AppColors.darkBlue,
                   ),
@@ -654,6 +714,12 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                     );
                   },
                 );
+              } else {
+                ///CAN ADD MORE
+                AnimatedSnackBar.material(
+                  'Insufficient amount',
+                  type: AnimatedSnackBarType.warning,
+                ).show(context);
               }
             },
             child: Row(

@@ -22,10 +22,6 @@ class SignInPageBloc extends Bloc<SignInPageEvent, SignInPageState> {
           SignInPageLoadingState(),
         );
 
-        SignInData signInData = await authPageRepository.signIn(
-          phoneNumber: event.phoneNumber,
-          password: event.password,
-        );
 
         try {
           SignInData signInData = await authPageRepository.signIn(

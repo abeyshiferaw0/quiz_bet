@@ -2,34 +2,38 @@ import 'package:hasura_connect/hasura_connect.dart';
 import 'package:logger/logger.dart';
 import 'package:quiz_bet/config/app_hive_boxes.dart';
 import 'package:quiz_bet/config/constants.dart';
-import 'package:quiz_bet/layer_data/graph_ql/auth_page.dart';
-import 'package:quiz_bet/layer_data/graph_ql/gql_category_page.dart';
+import 'package:quiz_bet/config/token_interceptor.dart';
+import 'package:quiz_bet/layer_data/graph_ql/gql_auth_page.dart';
 import 'package:quiz_bet/layer_data/models/sign_in_data.dart';
 import 'package:quiz_bet/layer_data/models/tokens.dart';
 import 'package:quiz_bet/layer_data/models/user.dart';
 
 class AuthPageService {
+
   final log = Logger();
-  //final TokenInterceptor tokenInterceptor = TokenInterceptor();
+
+  final TokenInterceptor tokenInterceptor = TokenInterceptor();
   final HasuraConnect hasuraConnect = HasuraConnect(
     Constants.hasuraUrl,
   );
-  final AuthPage authPage = AuthPage();
+  final GqlAuthPage gqlAuthPage = GqlAuthPage();
 
   Future<String> getUserId() async {
-    //todo make real user id
-    return Future.value("c9e3c74e-9c89-475d-8115-dbc26ab81c2e");
+
+    User user = AppHiveBoxes.instance.authBox.get(Constants.userKey);
+
+    return user.id;
   }
 
   Future<String> signUp(
       {required String name,
-      required String phoneNumber,
-      required String email,
-      required String password}) async {
+        required String phoneNumber,
+        required String email,
+        required String password}) async {
     try {
       ///INSERT GAME QUIZ
       var response = await hasuraConnect.mutation(
-        authPage.signUp(
+        gqlAuthPage.signUp(
           name: name,
           phoneNumber: phoneNumber,
           email: email,
@@ -57,7 +61,7 @@ class AuthPageService {
     try {
       ///INSERT GAME QUIZ
       var response = await hasuraConnect.mutation(
-        authPage.signIn(
+        gqlAuthPage.signIn(
           phoneNumber: phoneNumber,
           password: password,
         ),
@@ -75,18 +79,13 @@ class AuthPageService {
     }
   }
 
-  saveTokens(Tokens tokens) {
-    AppHiveBoxes.instance.authBox.put(Constants.tokensKey, tokens);
 
-
-    print("TOKENNN => ${AppHiveBoxes.instance.authBox.get(Constants.tokensKey)}");
-  }
 
   Future<void> forgotPassword(String phoneNumber) async{
     try {
       ///INSERT GAME QUIZ
       var response = await hasuraConnect.mutation(
-        authPage.forgotPassword(
+        gqlAuthPage.forgotPassword(
           phoneNumber: phoneNumber,
         ),
       );
@@ -104,7 +103,7 @@ class AuthPageService {
     try {
       ///INSERT GAME QUIZ
       var response = await hasuraConnect.mutation(
-        authPage.resetPassword(
+        gqlAuthPage.resetPassword(
           phoneNumber: phoneNumber,
           newPassword: newPassword,
           otp: otp,
@@ -122,9 +121,9 @@ class AuthPageService {
 
   saveUser(User user) {
     AppHiveBoxes.instance.authBox.put(Constants.userKey, user);
-
-
-    print("USERRRR => ${AppHiveBoxes.instance.authBox.get(Constants.userKey)}");
   }
 
+  saveTokens(Tokens tokens) {
+    AppHiveBoxes.instance.authBox.put(Constants.tokensKey, tokens);
+  }
 }

@@ -1,6 +1,6 @@
 import 'package:quiz_bet/layer_data/models/game_level.dart';
 
-class AuthPage {
+class GqlAuthPage {
   String signUp(
       {required String name,
       required String phoneNumber,

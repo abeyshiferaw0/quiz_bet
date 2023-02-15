@@ -20,15 +20,14 @@ class GamePageService {
   );
   final GqlGamePage gqlGamePage = GqlGamePage();
 
-  Future<GameInfo> startGameLevel(String categoryId, String userId, int amountToBet,String initialLevelId) async {
+  Future<GameInfo> startGameLevel(String categoryId, String userId,
+      int amountToBet, String initialLevelId) async {
     late String quizId;
 
     late Category category;
     late List<GameLevel> levels;
 
     try {
-
-
       ///GET GAME LEVELS WITH QUESTIONS
       var responseTwo = await hasuraConnect.query(
         gqlGamePage.getGameLevelData(
@@ -36,30 +35,15 @@ class GamePageService {
         ),
       );
 
-
-
-      log.i("startGameLevel responseTwo => ${responseTwo}");
-
-      log.i("startGameLevel responseOne => ${ gqlGamePage.insertGameQuiz(
-        categoryId: categoryId,
-        userId: userId,
-        amountToBet:amountToBet,
-        initialLevelId:initialLevelId,
-      )}");
-
       ///INSERT GAME QUIZ
       var responseOne = await hasuraConnect.mutation(
         gqlGamePage.insertGameQuiz(
           categoryId: categoryId,
           userId: userId,
-            amountToBet:amountToBet,
-            initialLevelId:initialLevelId,
+          amountToBet: amountToBet,
+          initialLevelId: initialLevelId,
         ),
       );
-
-
-
-
 
       ///PARSE AND ASSIGN VALUES
       quizId = responseOne['data']['insert_game_quiz_one']['id'];
@@ -69,8 +53,6 @@ class GamePageService {
           (responseTwo['data']['game_categoryList_by_pk']['levels'] as List)
               .map((level) => GameLevel.fromJson(level))
               .toList();
-
-
 
       return GameInfo(
         quizId: quizId,
@@ -84,31 +66,45 @@ class GamePageService {
   }
 
   Future<GameInitialInfo> getGameInfo(String categoryId, String userId) async {
-
     late Category category;
     late List<GameLevel> levels;
+    late double vatPercentage;
+    late double balance;
 
     try {
       ///GET GAME LEVELS WITH QUESTIONS
-      var responseTwo = await hasuraConnect.query(
+      var responseOne = await hasuraConnect.query(
         gqlGamePage.getGameLevelData(
           categoryId: categoryId,
         ),
       );
 
+      ///GET GAME LEVELS WITH QUESTIONS
+      var responseTwo = await hasuraConnect.mutation(
+        gqlGamePage.getUserBalace(),
+      );
+
       ///PARSE AND ASSIGN VALUES
       category =
-          Category.fromJson(responseTwo['data']['game_categoryList_by_pk']);
+          Category.fromJson(responseOne['data']['game_categoryList_by_pk']);
       levels =
-          (responseTwo['data']['game_categoryList_by_pk']['levels'] as List)
+          (responseOne['data']['game_categoryList_by_pk']['levels'] as List)
               .map((level) => GameLevel.fromJson(level))
               .toList();
+      vatPercentage = ((responseOne['data']['system_percentage'] as List)
+              .first['percentage'] as int)
+          .toDouble();
+      balance = responseTwo['data']['getWallet']['balance'] is int
+          ? (responseTwo['data']['getWallet']['balance'] as int).toDouble()
+          : responseTwo['data']['getWallet']['balance'];
 
-      log.i("startGameLevel responseTwo => ${responseTwo}");
+      log.i("startGameLevel responseTwo => ${responseOne}");
 
       return GameInitialInfo(
         category: category,
         levels: levels,
+        vatPercentage: vatPercentage,
+        balance: balance,
       );
     } catch (e) {
       log.e("startGameLevel => ${e.toString()}");
@@ -135,13 +131,13 @@ class GamePageService {
     }
   }
 
-  updateQuizLevel(String quizId, String levelId) async{
+  updateQuizLevel(String quizId, String levelId) async {
     try {
       ///INSERT GAME QUIZ
       var response = await hasuraConnect.mutation(
         gqlGamePage.updateQuizLevel(
-          quizId:quizId,
-          levelId:levelId,
+          quizId: quizId,
+          levelId: levelId,
         ),
       );
 
