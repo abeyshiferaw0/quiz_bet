@@ -23,6 +23,7 @@ class StartLevelEvent extends GameCheckerEvent {
 }
 
 class CheckAnswerEvent extends GameCheckerEvent {
+
   final GameLevel gameLevel;
   final GameQuestion gameQuestion;
   final Choice? choice;

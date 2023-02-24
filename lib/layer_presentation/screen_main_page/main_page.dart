@@ -66,8 +66,6 @@ class _MainPageState extends State<MainPage> {
                   index: _selectedBottomPageIndex,
                   children: [
                     HomePage(),
-
-
                     FriendsPage(),
                     PublicPage(),
                     TimerPage(),
@@ -113,7 +111,7 @@ class _MainPageState extends State<MainPage> {
             BottomNavigationBarItem(
               icon: Icon(FontAwesomeIcons.userPlus),
               activeIcon: Icon(FontAwesomeIcons.solidUserPlus),
-              label: 'Friends',
+              label: 'Group Play',
             ),
             BottomNavigationBarItem(
               icon: Icon(FontAwesomeIcons.userGroupCrown),

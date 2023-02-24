@@ -414,7 +414,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                                 gameInitialInfo.balance) {
                               ///CAN ADD MORE
                               AnimatedSnackBar.material(
-                                'Maximum amount reached',
+                                'Balance Limit Reached',
                                 type: AnimatedSnackBarType.warning,
                               ).show(context);
                             } else {

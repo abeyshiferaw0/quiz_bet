@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:quiz_bet/layer_data/models/drop_down_common_model.dart';
 import 'package:quiz_bet/layer_presentation/common/app_card.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
@@ -10,18 +11,28 @@ class AppDropdownInput extends StatefulWidget {
       {super.key,
       required this.list,
       required this.onChanged,
-      required this.hint});
+      required this.hint,
+      this.initialValue});
 
-  final List<String> list;
-  final Function(String?) onChanged;
+  final List<DropDownCommonModel> list;
+  final Function(DropDownCommonModel?) onChanged;
   final String hint;
+  final DropDownCommonModel? initialValue;
 
   @override
   State<AppDropdownInput> createState() => _AppDropdownInputState();
 }
 
 class _AppDropdownInputState extends State<AppDropdownInput> {
-  String dropdownValue = '';
+  DropDownCommonModel? dropdownValue;
+
+  @override
+  void initState() {
+    if (widget.initialValue != null) {
+      dropdownValue = widget.initialValue!;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +53,7 @@ class _AppDropdownInputState extends State<AppDropdownInput> {
               vertical: AppSizes.mp_v_1 / 2,
             ),
             child: DropdownButton<String>(
-              value: dropdownValue == '' ? null : dropdownValue,
+              value: dropdownValue != null ? dropdownValue!.id : '',
               icon: Icon(
                 FontAwesomeIcons.solidCircleArrowDown,
                 color: AppColors.black,
@@ -66,17 +77,22 @@ class _AppDropdownInputState extends State<AppDropdownInput> {
               ),
               onChanged: (String? value) {
                 ///This is called when the user selects an item.
-                widget.onChanged(value);
+                widget.onChanged(
+                  widget.list.firstWhere((element) => element.id == value),
+                );
 
                 ///
                 setState(() {
-                  dropdownValue = value!;
+                  dropdownValue = widget.list.firstWhere(
+                    (element) => element.id == value,
+                  );
                 });
               },
-              items: widget.list.map<DropdownMenuItem<String>>((String value) {
+              items: widget.list
+                  .map<DropdownMenuItem<String>>((DropDownCommonModel value) {
                 return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
+                  value: value.id,
+                  child: Text(value.name.nameAm),
                 );
               }).toList(),
             ),

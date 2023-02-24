@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_profile_page/profile_page_bloc.dart';
-import 'package:quiz_bet/layer_data/models/profile_page_data.dart';
+import 'package:quiz_bet/layer_data/models/page_data_models/profile_page_data.dart';
 import 'package:quiz_bet/layer_presentation/common/app_card.dart';
 import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
 import 'package:quiz_bet/layer_presentation/common/app_loading_widget.dart';

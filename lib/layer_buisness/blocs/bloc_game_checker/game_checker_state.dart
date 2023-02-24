@@ -42,8 +42,14 @@ class GameCheckerNextLevelState extends GameCheckerState {
 }
 
 class GameCheckerUserForfitState extends GameCheckerState {
+  final GameLevel gameLevel;
+  final int timeTaken;
+  final Choice choice;
+  final GameQuestion gameQuestion;
+
+  GameCheckerUserForfitState( {required this.choice,required this.gameLevel, required this.timeTaken,required this.gameQuestion});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [gameLevel,timeTaken,choice,gameQuestion];
 }
 
 

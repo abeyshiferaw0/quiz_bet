@@ -8,16 +8,19 @@ import 'package:quiz_bet/layer_data/models/category.dart';
 import 'package:quiz_bet/layer_data/models/game_info.dart';
 import 'package:quiz_bet/layer_data/models/game_initial_info.dart';
 import 'package:quiz_bet/layer_data/models/game_level.dart';
+import 'package:quiz_bet/layer_data/models/game_question.dart';
+import 'package:quiz_bet/layer_data/models/game_question_choice.dart';
 import 'package:quiz_bet/layer_data/models/home_page_data.dart';
 import 'package:quiz_bet/config/token_interceptor.dart';
+import 'package:quiz_bet/layer_data/models/page_data_models/create_challange_page_data.dart';
+
+import 'base_hasura_service.dart';
 
 class GamePageService {
   final log = Logger();
 
-  final HasuraConnect hasuraConnect = HasuraConnect(
-    Constants.hasuraUrl,
-    interceptors: [TokenInterceptor()],
-  );
+  BaseHasuraService baseHasuraService = BaseHasuraService();
+
   final GqlGamePage gqlGamePage = GqlGamePage();
 
   Future<GameInfo> startGameLevel(String categoryId, String userId,
@@ -29,21 +32,22 @@ class GamePageService {
 
     try {
       ///GET GAME LEVELS WITH QUESTIONS
-      var responseTwo = await hasuraConnect.query(
-        gqlGamePage.getGameLevelData(
+      var responseTwo = await baseHasuraService.query(
+        document: gqlGamePage.getGameLevelData(
           categoryId: categoryId,
         ),
       );
 
       ///INSERT GAME QUIZ
-      var responseOne = await hasuraConnect.mutation(
-        gqlGamePage.insertGameQuiz(
+      var responseOne = await baseHasuraService.mutation(
+        document: gqlGamePage.insertGameQuiz(
           categoryId: categoryId,
           userId: userId,
           amountToBet: amountToBet,
           initialLevelId: initialLevelId,
         ),
       );
+
 
       ///PARSE AND ASSIGN VALUES
       quizId = responseOne['data']['insert_game_quiz_one']['id'];
@@ -73,15 +77,15 @@ class GamePageService {
 
     try {
       ///GET GAME LEVELS WITH QUESTIONS
-      var responseOne = await hasuraConnect.query(
-        gqlGamePage.getGameLevelData(
+      var responseOne = await baseHasuraService.query(
+        document: gqlGamePage.getGameLevelData(
           categoryId: categoryId,
         ),
       );
 
       ///GET GAME LEVELS WITH QUESTIONS
-      var responseTwo = await hasuraConnect.mutation(
-        gqlGamePage.getUserBalace(),
+      var responseTwo = await baseHasuraService.mutation(
+        document: gqlGamePage.getUserBalace(),
       );
 
       ///PARSE AND ASSIGN VALUES
@@ -94,9 +98,11 @@ class GamePageService {
       vatPercentage = ((responseOne['data']['system_percentage'] as List)
               .first['percentage'] as int)
           .toDouble();
-      balance = responseTwo['data']['getWallet']['balance'] is int
-          ? (responseTwo['data']['getWallet']['balance'] as int).toDouble()
-          : responseTwo['data']['getWallet']['balance'];
+
+      balance = 100.0;
+      // balance = responseTwo['data']['getWallet']['balance'] is int
+      //     ? (responseTwo['data']['getWallet']['balance'] as int).toDouble()
+      //     : responseTwo['data']['getWallet']['balance'];
 
       log.i("startGameLevel responseTwo => ${responseOne}");
 
@@ -116,8 +122,8 @@ class GamePageService {
       String quizId, GameLevel gameLevel, int timeTaken) async {
     try {
       ///INSERT GAME QUIZ
-      var response = await hasuraConnect.mutation(
-        gqlGamePage.saveGameHistory(
+      var response = await baseHasuraService.mutation(
+        document: gqlGamePage.saveGameHistory(
           quizId,
           gameLevel,
           timeTaken,
@@ -131,11 +137,31 @@ class GamePageService {
     }
   }
 
+  saveGameForfitHistory(String quizId, GameLevel gameLevel, int timeTaken, Choice choice,GameQuestion gameQuestion) async{
+    try {
+      ///INSERT GAME QUIZ
+      var response = await baseHasuraService.mutation(
+        document: gqlGamePage.saveGameForfitHistory(
+          quizId,
+          gameLevel,
+          timeTaken,
+            choice,
+            gameQuestion,
+        ),
+      );
+
+      return;
+    } catch (e) {
+      log.e("startGameLevel => ${e.toString()}");
+      rethrow;
+    }
+  }
+
   updateQuizLevel(String quizId, String levelId) async {
     try {
       ///INSERT GAME QUIZ
-      var response = await hasuraConnect.mutation(
-        gqlGamePage.updateQuizLevel(
+      var response = await baseHasuraService.mutation(
+        document: gqlGamePage.updateQuizLevel(
           quizId: quizId,
           levelId: levelId,
         ),
@@ -149,4 +175,39 @@ class GamePageService {
       rethrow;
     }
   }
+
+  getInitialInfoCreateChallange(String userId) async {
+    try {
+      ///GET CATEGORY AND LEVEL LIST
+      var responseOne = await baseHasuraService.query(
+        document: gqlGamePage.initialInfoCreateChallange(
+          userId: userId,
+        ),
+      );
+
+      ///INSERT GAME QUIZ
+      var responseTwo = await baseHasuraService.mutation(
+        document: gqlGamePage.getUserBalace(),
+      );
+
+      log.i("getInitialInfoCreateChallange responseOne ${responseOne}");
+
+      log.i("getInitialInfoCreateChallange responseTwo ${responseTwo}");
+
+      return CreateChallangePageData(
+        categories: (responseOne['data']['game_categoryList'] as List)
+            .map((category) => Category.fromJson(category))
+            .toList(),
+          walletBalance:100.0,
+        // walletBalance: responseTwo['data']['getWallet']['balance'] is int
+        //     ? (responseTwo['data']['getWallet']['balance'] as int).toDouble()
+        //     : responseTwo['data']['getWallet']['balance'],
+      );
+    } catch (e) {
+      log.e("startGameLevel => ${e.toString()}");
+      rethrow;
+    }
+  }
+
+
 }

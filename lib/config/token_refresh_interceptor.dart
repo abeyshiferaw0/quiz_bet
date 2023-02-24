@@ -7,7 +7,7 @@ import 'package:quiz_bet/layer_data/models/tokens.dart';
 import 'package:quiz_bet/layer_data/models/user.dart';
 import 'package:quiz_bet/layer_data/services/service_auth_page.dart';
 
-class TokenInterceptor extends InterceptorBase {
+class TokenRefreshInterceptor extends InterceptorBase {
   final log = Logger();
 
   @override
@@ -21,10 +21,7 @@ class TokenInterceptor extends InterceptorBase {
               .role
               .first;
       request.headers["Authorization"] =
-          "Bearer ${(AppHiveBoxes.instance.authBox.get(Constants.tokensKey) as Tokens).accessToken}";
-
-      print("WALLETresponse => ${request.headers['Authorization']}");
-
+          "Bearer ${(AppHiveBoxes.instance.authBox.get(Constants.tokensKey) as Tokens).refreshToken}";
       return Future.value(request);
     } catch (e) {
       log.e(e.toString());

@@ -1,4 +1,6 @@
 import 'package:quiz_bet/layer_data/models/game_level.dart';
+import 'package:quiz_bet/layer_data/models/game_question.dart';
+import 'package:quiz_bet/layer_data/models/game_question_choice.dart';
 
 class GqlGamePage {
   String insertGameQuiz({
@@ -69,19 +71,15 @@ class GqlGamePage {
 """;
   }
 
-
   String getUserBalace() {
     return """
-        mutation mmm{
+        mutation getUserBalace{
             getWallet{
               balance
             }
         }            
     """;
   }
-
-
-
 
   String saveGameHistory(String quizId, GameLevel level, int timeTaken) {
     List<String> objects = [];
@@ -101,6 +99,51 @@ class GqlGamePage {
           }
         }
       }
+    """;
+  }
+
+  String saveGameForfitHistory(String quizId, GameLevel level, int timeTaken, Choice choice,GameQuestion gameQuestion) {
+
+    return """
+      mutation saveGameHistory {  
+        insert_game_gamePlayHistory_one(object:{quiz_id:"$quizId",question_id:"${gameQuestion.id}",answer:"${choice.option}",time_taken:"$timeTaken"}){
+           id
+        }
+      }
+    """;
+  }
+
+  String initialInfoCreateChallange({required String userId}) {
+    return """
+          query initialInfoCreateChallange {
+            game_categoryList {
+              id
+              name_json
+              description_json
+              icon {
+                id
+                name
+              }
+              levels(order_by: {level_key: asc}) {
+                id
+                name_json
+                level_key
+                odds
+                questions {
+                  id
+                  question_json
+                  hint
+                  active
+                  max_time_in_seconds
+                  quizQuestionChoice {
+                    id
+                    choices
+                    correct
+                  }
+                }
+              }
+            }
+          }
     """;
   }
 }

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:logger/logger.dart';
-import 'package:quiz_bet/layer_data/models/profile_page_data.dart';
+import 'package:quiz_bet/layer_data/models/page_data_models/profile_page_data.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_profile_page.dart';
 
 part 'profile_page_event.dart';

@@ -7,9 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_checker/game_checker_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_gmae_history_saver/game_history_saver_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/game_player_page/game_player_bloc.dart';
 import 'package:quiz_bet/layer_data/models/game_info.dart';
 import 'package:quiz_bet/layer_data/models/game_level.dart';
+import 'package:quiz_bet/layer_data/repositories/repository_game_page.dart';
+import 'package:quiz_bet/layer_data/services/service_game_page.dart';
 import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
 import 'package:quiz_bet/layer_presentation/common/app_loading_widget.dart';
 import 'package:quiz_bet/layer_presentation/screen_game_player_page/widgets/dialog_level_failure.dart';
@@ -90,19 +93,20 @@ class _GamePlayerPageState extends State<GamePlayerPage> {
               return AppLoadingWidget();
             }
             if (state is GamePlayerLevelUpdatingErrorState) {
-              return AppErrorWidget(onTryAgain: () {
-                ///START PLAYING INITIAL GAME LEVEL
-                context.read<GamePlayerBloc>().add(
-                  GameLevelUpdateEventEvent(
-                    gameInfo: widget.gameInfo,
-                    amountToBet: widget.amountToBet,
-                    vatPer: widget.vatPer, nextLevel: state.level,
-                  ),
-                );
-              },);
+              return AppErrorWidget(
+                onTryAgain: () {
+                  ///START PLAYING INITIAL GAME LEVEL
+                  context.read<GamePlayerBloc>().add(
+                        GameLevelUpdateEventEvent(
+                          gameInfo: widget.gameInfo,
+                          amountToBet: widget.amountToBet,
+                          vatPer: widget.vatPer,
+                          nextLevel: state.level,
+                        ),
+                      );
+                },
+              );
             }
-
-
 
             return const SizedBox();
           },
@@ -160,8 +164,23 @@ class _GamePlayerPageState extends State<GamePlayerPage> {
           if (state is GameCheckerUserForfitState) {
             showDialog<bool>(
               context: context,
+              barrierDismissible: false,
               builder: (context) {
-                return const DialogLevelFailure();
+                return RepositoryProvider(
+                  create: (context) =>
+                      GamePageRepository(service: GamePageService()),
+                  child: BlocProvider(
+                    create: (context) => GameHistorySaverBloc(
+                      gamePageRepository: context.read<GamePageRepository>(),
+                    ),
+                    child: DialogLevelFailure(
+                        gameInfo: widget.gameInfo,
+                        gameLevel: state.gameLevel,
+                        timeTaken: state.timeTaken,
+                        choice: state.choice,
+                        gameQuestion: state.gameQuestion,),
+                  ),
+                );
               },
             ).then((value) => Navigator.pop(context));
           }

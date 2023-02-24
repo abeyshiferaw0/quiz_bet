@@ -64,7 +64,8 @@ class GameCheckerBloc extends Bloc<GameCheckerEvent, GameCheckerState> {
             );
           }
         } else {
-          emit(GameCheckerUserForfitState());
+
+          emit(GameCheckerUserForfitState(gameLevel:event.gameLevel,timeTaken: event.timeTaken,choice:event.choice!,gameQuestion:event.gameQuestion,),);
         }
       }
 

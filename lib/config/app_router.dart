@@ -8,11 +8,13 @@ import 'package:quiz_bet/layer_buisness/blocs/bloc_auth_pages/bloc_sign_up/sign_
 import 'package:quiz_bet/layer_buisness/blocs/bloc_category_page/category_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_checker/game_checker_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_get_info/game_get_info_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_create_challange/game_group_create_challange_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_start/game_start_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_gmae_history_saver/game_history_saver_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_home_page/home_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_profile_page/profile_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/game_player_page/game_player_bloc.dart';
+import 'package:quiz_bet/layer_buisness/cubits/game_group_challange_create_cubits/game_group_create_challange_drop_down_cubit.dart';
 import 'package:quiz_bet/layer_buisness/cubits/game_start_info_cubit/game_start_info_cubit.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_category_page.dart';
@@ -281,7 +283,34 @@ class AppRouter {
         builder = (_) => const GroupDetailPage();
         break;
       case AppRouterPaths.createChallenge:
-        builder = (_) => const CreateChallengePage();
+        builder = (_) => MultiRepositoryProvider(
+              providers: [
+                RepositoryProvider(
+                  create: (context) =>
+                      GamePageRepository(service: GamePageService()),
+                ),
+                RepositoryProvider(
+                  create: (context) =>
+                      AuthPageRepository(service: AuthPageService()),
+                ),
+              ],
+              child: MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => GameGroupCreateChallangeBloc(
+                      gamePageRepository: context.read<GamePageRepository>(),
+                      authPageRepository: context.read<AuthPageRepository>(),
+                    ),
+                  ),
+                  BlocProvider(
+                    create: (context) =>
+                        GameGroupCreateChallangeDropDownCubit(),
+                  ),
+                ],
+                child: CreateChallengePage(),
+              ),
+            );
+
         break;
       case AppRouterPaths.createGroup:
         builder = (_) => const CreateAGroupPage();

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
-import 'package:quiz_bet/layer_presentation/common/app_custom_tab_indicator.dart';
-import 'package:quiz_bet/layer_presentation/screen_frends_page/widgets/tab_page_online.dart';
 import 'package:quiz_bet/theme/app_assets.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';

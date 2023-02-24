@@ -26,6 +26,17 @@ class GameStartBloc extends Bloc<GameStartEvent, GameStartState> {
         ///EMIT LOADING
         emit(GameStartLoading());
 
+        // //TODO
+        // ///DEBUG REMOVE
+        // String userId = await authPageRepository.getUserId();
+        // GameInfo gameInfo = await gamePageRepository.startGameLevel(
+        //   categoryId: event.category.id,
+        //   userId: userId,
+        //   amountToBet: event.amountToBet,
+        //   initialLevelId: event.initialLevelId,
+        // );
+        // ////
+
         try {
 
           ///GET USER ID

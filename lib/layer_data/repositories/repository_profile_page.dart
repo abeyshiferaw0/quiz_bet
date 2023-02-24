@@ -1,6 +1,6 @@
 import 'package:quiz_bet/layer_data/models/category.dart';
 import 'package:quiz_bet/layer_data/models/home_page_data.dart';
-import 'package:quiz_bet/layer_data/models/profile_page_data.dart';
+import 'package:quiz_bet/layer_data/models/page_data_models/profile_page_data.dart';
 import 'package:quiz_bet/layer_data/models/sign_in_data.dart';
 import 'package:quiz_bet/layer_data/models/tokens.dart';
 import 'package:quiz_bet/layer_data/models/user.dart';

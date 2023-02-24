@@ -9,7 +9,6 @@ import 'package:sizer/sizer.dart';
 
 void main() async{
 
-
   WidgetsFlutterBinding.ensureInitialized();
 
   await Future.delayed(Duration(milliseconds: 500));
@@ -28,6 +27,8 @@ void main() async{
 
 //INIT ROUTERS
 final AppRouter _appRouter = AppRouter();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: true,
           initialRoute: AppRouterPaths.splashRoute,
           onGenerateRoute: _appRouter.generateRoute,
+          navigatorKey: navigatorKey,
           builder: (BuildContext context, Widget? child) {
             final MediaQueryData data = MediaQuery.of(context);
 

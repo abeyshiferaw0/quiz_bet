@@ -63,4 +63,18 @@ class GqlAuthPage {
          }
     """;
   }
+
+  String refreshToken() {
+    return """
+      mutation refreshToken {
+        refreshToken{
+          tokens {
+            access_token
+            refresh_token
+          }
+        }
+      }
+    """;
+  }
+
 }

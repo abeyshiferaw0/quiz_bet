@@ -4,23 +4,21 @@ import 'package:quiz_bet/config/constants.dart';
 import 'package:quiz_bet/layer_data/graph_ql/gql_category_page.dart';
 import 'package:quiz_bet/layer_data/models/category.dart';
 import 'package:quiz_bet/config/token_interceptor.dart';
+import 'package:quiz_bet/layer_data/services/base_hasura_service.dart';
 
 
 class CategoryPageService {
   final log = Logger();
   CategoryPageService();
 
-  //final TokenInterceptor tokenInterceptor = TokenInterceptor();
-  final HasuraConnect hasuraConnect = HasuraConnect(
-    Constants.hasuraUrl,
-    interceptors: [TokenInterceptor()],
-  );
+  BaseHasuraService baseHasuraService = BaseHasuraService();
+
   final GqlCategoryPage gqlCategories = GqlCategoryPage();
 
   Future<List<Category>> getAllCategories() async {
     try {
       var response =
-          await hasuraConnect.query(gqlCategories.getAllCategories());
+          await baseHasuraService.query(document: gqlCategories.getAllCategories(),);
 
       log.i("getAllCategories response => ${response['data']['game_categoryList']}");
 
