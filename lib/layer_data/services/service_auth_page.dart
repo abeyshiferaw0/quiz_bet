@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hasura_connect/hasura_connect.dart';
 import 'package:logger/logger.dart';
 import 'package:quiz_bet/config/app_hive_boxes.dart';
 import 'package:quiz_bet/config/app_router.dart';
 import 'package:quiz_bet/config/constants.dart';
-import 'package:quiz_bet/config/token_interceptor.dart';
 import 'package:quiz_bet/layer_data/graph_ql/gql_auth_page.dart';
 import 'package:quiz_bet/layer_data/models/sign_in_data.dart';
 import 'package:quiz_bet/layer_data/models/tokens.dart';
@@ -64,6 +62,7 @@ class AuthPageService {
           password: password,
         ),
       );
+
 
       Tokens tokens = Tokens.fromJson(response['data']['signIn']['tokens']);
 

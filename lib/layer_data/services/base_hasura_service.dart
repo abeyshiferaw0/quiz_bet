@@ -112,6 +112,8 @@ class BaseHasuraService {
     try {
       ///SEND QUERY
       var result = await hasuraConnectSignInUp.mutation(document);
+      print("response=>>> ${result}");
+
       return result;
     } catch (e) {
       return;

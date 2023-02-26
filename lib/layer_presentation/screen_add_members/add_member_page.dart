@@ -8,7 +8,9 @@ import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 
 class AddMembersPage extends StatefulWidget {
-  const AddMembersPage({Key? key}) : super(key: key);
+  const AddMembersPage({Key? key, required this.quizId}) : super(key: key);
+
+  final String quizId;
 
   @override
   State<AddMembersPage> createState() => _AddMembersPageState();
@@ -96,7 +98,9 @@ class _AddMembersPageState extends State<AddMembersPage> {
   buildTabPages() {
     return TabBarView(
       children: [
-        TabPageFriends(),
+        TabPageFriends(
+          quizId: widget.quizId,
+        ),
         TabInviteById(),
       ],
     );

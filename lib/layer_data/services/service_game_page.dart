@@ -48,7 +48,6 @@ class GamePageService {
         ),
       );
 
-
       ///PARSE AND ASSIGN VALUES
       quizId = responseOne['data']['insert_game_quiz_one']['id'];
       category =
@@ -137,7 +136,8 @@ class GamePageService {
     }
   }
 
-  saveGameForfitHistory(String quizId, GameLevel gameLevel, int timeTaken, Choice choice,GameQuestion gameQuestion) async{
+  saveGameForfitHistory(String quizId, GameLevel gameLevel, int timeTaken,
+      Choice choice, GameQuestion gameQuestion) async {
     try {
       ///INSERT GAME QUIZ
       var response = await baseHasuraService.mutation(
@@ -145,8 +145,8 @@ class GamePageService {
           quizId,
           gameLevel,
           timeTaken,
-            choice,
-            gameQuestion,
+          choice,
+          gameQuestion,
         ),
       );
 
@@ -198,7 +198,7 @@ class GamePageService {
         categories: (responseOne['data']['game_categoryList'] as List)
             .map((category) => Category.fromJson(category))
             .toList(),
-          walletBalance:100.0,
+        walletBalance: 100.0,
         // walletBalance: responseTwo['data']['getWallet']['balance'] is int
         //     ? (responseTwo['data']['getWallet']['balance'] as int).toDouble()
         //     : responseTwo['data']['getWallet']['balance'],
@@ -209,5 +209,37 @@ class GamePageService {
     }
   }
 
+  Future<String> createGroupGame(
+      {required String userId,
+      required String amountPerPerson,
+      required String categoryId,
+      required String levelId}) async {
+    try {
+      ///CREATE QUIZ GROUP
+      var responseOne = await baseHasuraService.mutation(
+        document: gqlGamePage.createGroupGame(
+          userId: userId,
+          amountPerPerson: amountPerPerson,
+          categoryId: categoryId,
+          levelId: levelId,
+        ),
+      );
 
+      String quizGroupId =
+          responseOne['data']['insert_game_quizGroup_one']['id'];
+
+      ///ADD USER IN ACTIVE PLAYERS LIST
+      var responseTwo = await baseHasuraService.mutation(
+        document: gqlGamePage.addUserToActivePlayer(
+          userId: userId,
+          quizGroupId: quizGroupId,
+        ),
+      );
+
+      return quizGroupId;
+    } catch (e) {
+      log.e("startGameLevel => ${e.toString()}");
+      rethrow;
+    }
+  }
 }

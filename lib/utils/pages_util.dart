@@ -77,4 +77,9 @@ class PagesUtil {
     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "$twoDigitMinutes:$twoDigitSeconds";
   }
+
+  static bool isUUID ( uuid ) {
+    RegExp hexColor = RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$');
+    return hexColor.hasMatch(uuid);
+  }
 }

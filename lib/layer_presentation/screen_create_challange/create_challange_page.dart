@@ -5,11 +5,10 @@ import 'package:flutter_beep/flutter_beep.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiz_bet/config/app_router.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_challange_create/game_group_challange_create_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_create_challange/game_group_create_challange_bloc.dart';
 import 'package:quiz_bet/layer_buisness/cubits/game_group_challange_create_cubits/game_group_create_challange_drop_down_cubit.dart';
-import 'package:quiz_bet/layer_buisness/cubits/game_start_info_cubit/game_start_info_cubit.dart';
 import 'package:quiz_bet/layer_data/models/drop_down_common_model.dart';
-import 'package:quiz_bet/layer_data/models/name_json.dart';
 import 'package:quiz_bet/layer_data/models/page_data_models/create_challange_page_data.dart';
 import 'package:quiz_bet/layer_presentation/common/app_card.dart';
 import 'package:quiz_bet/layer_presentation/common/app_drop_down_input.dart';
@@ -17,7 +16,6 @@ import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
 import 'package:quiz_bet/layer_presentation/common/app_feedback_button.dart';
 import 'package:quiz_bet/layer_presentation/common/app_loading_widget.dart';
 import 'package:quiz_bet/layer_presentation/screen_game_player_info_page/widgets/dialog_balance_insufucent.dart';
-import 'package:quiz_bet/theme/app_assets.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 import 'package:quiz_bet/utils/pages_util.dart';
@@ -60,7 +58,6 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                 GameGroupCreateChallangeState>(
               listener: (context, state) {
                 if (state is GameGroupCreateChallangeLoadedState) {
-
                   ///IF USER BALANCE IS ZERO KICK OF GAME STARTING PAGE
                   if (state.createChallangePageData.walletBalance < 1) {
                     Navigator.pop(context);
@@ -119,7 +116,52 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
     );
   }
 
-  Container buildLoadedView(
+  buildLoadedView(
+      BuildContext context, CreateChallangePageData createChallangePageData) {
+    return BlocConsumer<GameGroupChallangeCreateBloc,
+        GameGroupChallangeCreateState>(
+      listener: (context, state) {
+        if (state is GameGroupChallangeCreateLoadedState) {
+          Navigator.pushNamed(
+            context,
+            AppRouterPaths.addMember,
+            arguments: ScreenArguments(
+              data: {
+                'quiz_id':state.groupQuizId,
+              },
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is GameGroupChallangeCreateLoadingState) {
+          return const AppLoadingWidget();
+        }
+
+        if (state is GameGroupChallangeCreateLoadingErrorState) {
+          return AppErrorWidget(
+            onTryAgain: () {
+              context.read<GameGroupChallangeCreateBloc>().add(
+                    GameGroupCreateChallangeeEvent(
+                      amountPerPerson: textEditingEntryAmountController.text,
+                      categoryId: selectedCategory!.id,
+                      levelId: selectedLevel!.id,
+                    ),
+                  );
+            },
+          );
+        }
+
+        if (state is GameGroupChallangeCreateLoadedState) {
+          return buildSecondLoadedView(context, createChallangePageData);
+        }
+
+        return buildSecondLoadedView(context, createChallangePageData);
+      },
+    );
+  }
+
+  Container buildSecondLoadedView(
       BuildContext context, CreateChallangePageData createChallangePageData) {
     return Container(
       width: double.infinity,
@@ -188,13 +230,13 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                   builder: (context, state) {
                     if (state
                         is GameGroupCreateChallangeDropDownOnCategorySelected) {
-                      ///SET SELECTED LEVEL
-                      selectedLevel = DropDownCommonModel(
-                        id: state.category.gameLevels!.first.id,
-                        name: state.category.gameLevels!.first.name,
-                      );
-
                       if (state.category.gameLevels!.isNotEmpty) {
+                        ///SET SELECTED LEVEL
+                        selectedLevel = DropDownCommonModel(
+                          id: state.category.gameLevels!.first.id,
+                          name: state.category.gameLevels!.first.name,
+                        );
+
                         return AppDropdownInput(
                           list: state.category.gameLevels!
                               .map((e) =>
@@ -545,7 +587,14 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
 
                       ///
                       if (canCreateGame) {
-                        Navigator.pushNamed(context, AppRouterPaths.addMember);
+                        context.read<GameGroupChallangeCreateBloc>().add(
+                              GameGroupCreateChallangeeEvent(
+                                amountPerPerson:
+                                    textEditingEntryAmountController.text,
+                                categoryId: selectedCategory!.id,
+                                levelId: selectedLevel!.id,
+                              ),
+                            );
                       }
                     },
                     child: Text(

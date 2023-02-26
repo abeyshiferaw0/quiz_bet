@@ -8,7 +8,9 @@ import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 
 class TabPageFriends extends StatelessWidget {
-  const TabPageFriends({Key? key}) : super(key: key);
+  const TabPageFriends({Key? key,  required this.quizId}) : super(key: key);
+
+  final String quizId;
 
   @override
   Widget build(BuildContext context) {
@@ -17,12 +19,12 @@ class TabPageFriends extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: AppSizes.mp_v_12*1.2,),
+          SizedBox(height: AppSizes.mp_v_12,),
           PrettyQr(
             image: AssetImage(AppAssets.appLogo),
             typeNumber: 3,
             size: AppSizes.icon_size_28 * 1.6,
-            data: 'https://www.google.ru',
+            data: quizId,
             errorCorrectLevel: QrErrorCorrectLevel.M,
             roundEdges: true,
             elementColor: AppColors.gold,

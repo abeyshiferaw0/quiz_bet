@@ -111,7 +111,7 @@ class _MainPageState extends State<MainPage> {
             BottomNavigationBarItem(
               icon: Icon(FontAwesomeIcons.userPlus),
               activeIcon: Icon(FontAwesomeIcons.solidUserPlus),
-              label: 'Group Play',
+              label: 'Challenges',
             ),
             BottomNavigationBarItem(
               icon: Icon(FontAwesomeIcons.userGroupCrown),

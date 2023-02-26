@@ -50,13 +50,25 @@ class GamePageRepository {
         userId,
       );
 
-  saveGameForfitHistory(
-          String quizId, GameLevel gameLevel, int timeTaken, Choice choice,GameQuestion gameQuestion) async =>
+  saveGameForfitHistory(String quizId, GameLevel gameLevel, int timeTaken,
+          Choice choice, GameQuestion gameQuestion) async =>
       service.saveGameForfitHistory(
         quizId,
         gameLevel,
         timeTaken,
         choice,
-          gameQuestion,
+        gameQuestion,
+      );
+
+  createGroupGame(
+          {required String userId,
+          required String amountPerPerson,
+          required String categoryId,
+          required String levelId}) async =>
+      service.createGroupGame(
+        userId: userId,
+        amountPerPerson: amountPerPerson,
+        categoryId: categoryId,
+        levelId: levelId,
       );
 }

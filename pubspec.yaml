@@ -41,6 +41,7 @@ dependencies:
 
   #FOR DISPLAYING QR CODE
   pretty_qr_code: ^2.0.3
+  qr_code_scanner: ^1.0.1
 
   #FOR NETWORK
   hasura_connect: ^4.0.0+4

@@ -8,8 +8,8 @@ import 'package:quiz_bet/layer_buisness/blocs/bloc_auth_pages/bloc_sign_up/sign_
 import 'package:quiz_bet/layer_buisness/blocs/bloc_category_page/category_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_checker/game_checker_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_get_info/game_get_info_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_challange_create/game_group_challange_create_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_create_challange/game_group_create_challange_bloc.dart';
-import 'package:quiz_bet/layer_buisness/blocs/bloc_game_start/game_start_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_gmae_history_saver/game_history_saver_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_home_page/home_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_profile_page/profile_page_bloc.dart';
@@ -39,11 +39,10 @@ import 'package:quiz_bet/layer_presentation/screen_friend_request_page/all_frend
 import 'package:quiz_bet/layer_presentation/screen_game_player_page/game_player_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_game_start_countdown_page/game_start_countdown_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_group_detail_page/group_detail_page.dart';
+import 'package:quiz_bet/layer_presentation/screen_join_game/join_game_game_find_page.dart';
+import 'package:quiz_bet/layer_presentation/screen_join_game/join_game_qr_scan_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_main_page/main_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_on_boarding/onboarding_page.dart';
-import 'package:quiz_bet/layer_presentation/screen_on_boarding/onboarding_page_one.dart';
-import 'package:quiz_bet/layer_presentation/screen_on_boarding/onboarding_page_three.dart';
-import 'package:quiz_bet/layer_presentation/screen_on_boarding/onboarding_page_two.dart';
 import 'package:quiz_bet/layer_presentation/screen_profile_page/profile_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_splash_page/spalsh_page.dart';
 
@@ -77,6 +76,9 @@ class AppRouterPaths {
   static const String createChallenge = '/create_challenge';
   static const String createGroup = '/create_group';
   static const String addMember = '/add_member';
+  static const String joinGameQrScan = '/join_game_qr_scan';
+  static const String joinGameFindGameScan = '/join_game_find_game_scan';
+
 }
 
 class AppRouter {
@@ -306,6 +308,12 @@ class AppRouter {
                     create: (context) =>
                         GameGroupCreateChallangeDropDownCubit(),
                   ),
+                  BlocProvider(
+                    create: (context) => GameGroupChallangeCreateBloc(
+                      gamePageRepository: context.read<GamePageRepository>(),
+                      authPageRepository: context.read<AuthPageRepository>(),
+                    ),
+                  ),
                 ],
                 child: CreateChallengePage(),
               ),
@@ -316,8 +324,22 @@ class AppRouter {
         builder = (_) => const CreateAGroupPage();
         break;
       case AppRouterPaths.addMember:
-        builder = (_) => const AddMembersPage();
+        final args = settings.arguments as ScreenArguments;
+        builder = (_) => AddMembersPage(
+              quizId: args.data['quiz_id'],
+            );
         break;
+
+      case AppRouterPaths.joinGameQrScan:
+        builder = (_) => JoinGameQrScanPage();
+        break;
+
+      case AppRouterPaths.joinGameFindGameScan:
+        final args = settings.arguments as ScreenArguments;
+        builder = (_) => JoinGameGameFindPage( quizId: args.data['quiz_id'],);
+        break;
+
+
 
       default:
         throw Exception('Invalid route: ${settings.name}');

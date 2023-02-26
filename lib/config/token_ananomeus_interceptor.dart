@@ -17,12 +17,8 @@ class TokenAnonymousInterceptor extends InterceptorBase {
     try {
       request.headers["x-hasura-admin-secret"] =
           "8ShURDi6roXj9tmejrWwX992by5S5Q";
-      request.headers["role"] =
-          (AppHiveBoxes.instance.authBox.get(Constants.userKey) as User)
-              .role
-              .first;
-      request.headers["Authorization"] =
-          "Bearer ${(AppHiveBoxes.instance.authBox.get(Constants.tokensKey) as Tokens).refreshToken}";
+
+
       return Future.value(request);
     } catch (e) {
       log.e(e.toString());
