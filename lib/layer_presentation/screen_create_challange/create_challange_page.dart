@@ -332,7 +332,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                           ),
                           child: AppButtonFeedBack(
                             onTap: () {
-                              FlutterBeep.beep();
+                              //FlutterBeep.beep();
 
                               ///IF MAX (BALANCE IS REACHED DON'T INCREMENT)
                               if (PagesUtil.getIncrementedBid(
@@ -374,7 +374,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                           ),
                           child: AppButtonFeedBack(
                             onTap: () {
-                              FlutterBeep.beep();
+                              //FlutterBeep.beep();
                               textEditingEntryAmountController.text =
                                   "${PagesUtil.getDescrimentedBid(textEditingEntryAmountController.text)}";
                             },
@@ -475,7 +475,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                           ),
                           child: AppButtonFeedBack(
                             onTap: () {
-                              FlutterBeep.beep();
+                              //FlutterBeep.beep();
                               textEditingMaxNoPlayersController.text =
                                   "${PagesUtil.getIncrementedBid(textEditingMaxNoPlayersController.text)}";
                             },
@@ -504,7 +504,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                           ),
                           child: AppButtonFeedBack(
                             onTap: () {
-                              FlutterBeep.beep();
+                              //FlutterBeep.beep();
                               textEditingMaxNoPlayersController.text =
                                   "${PagesUtil.getDescrimentedBid(textEditingMaxNoPlayersController.text)}";
                             },

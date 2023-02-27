@@ -277,7 +277,7 @@ class _GameStartCountDownPageState extends State<GameStartCountDownPage> {
               totalRepeatCount: 1,
 
               onNext: (i, b) {
-                FlutterBeep.beep();
+                //FlutterBeep.beep();
               },
               onFinished: () {
                 Navigator.pop(context);

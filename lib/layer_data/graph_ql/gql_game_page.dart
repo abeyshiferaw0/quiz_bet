@@ -148,7 +148,11 @@ class GqlGamePage {
     """;
   }
 
-  String createGroupGame({required String userId,required String amountPerPerson,required String categoryId,required String levelId}) {
+  String createGroupGame(
+      {required String userId,
+      required String amountPerPerson,
+      required String categoryId,
+      required String levelId}) {
     return """
         mutation createGroupGame{
           insert_game_quizGroup_one(object:{amount_per_person:"$amountPerPerson",category_id:"$categoryId",users_id:"$userId",level_id:"$levelId"}){
@@ -158,7 +162,7 @@ class GqlGamePage {
     """;
   }
 
-  addUserToActivePlayer({required String quizGroupId,required String userId}) {
+  addUserToActivePlayer({required String quizGroupId, required String userId}) {
     return """
         mutation a {
           insert_game_groupActivePlayer_one(object: {isActive: true, quiz_group_id: "$quizGroupId", user_id: "$userId"}) {
@@ -202,6 +206,45 @@ class GqlGamePage {
               }
             }
           }
+    """;
+  }
+
+  String findGroupChallange(
+      {required String userId, required String groupQuizId}) {
+    return """
+        query mm {
+  game_quizGroup_by_pk(id: "01a6d438-bcfe-47d8-9f38-8083b8df62a2") {
+    amount_per_person
+    categoryList {
+      id
+      icon {
+        id
+        name
+      }
+      name_json
+      description_json
+    }
+    level {
+      id
+      name_json
+      level_key
+      odds
+      questions {
+        id
+        question_json
+        hint
+        active
+        max_time_in_seconds
+        quizQuestionChoice {
+          id
+          choices
+          correct
+        }
+      }
+    }
+  }
+}
+
     """;
   }
 }

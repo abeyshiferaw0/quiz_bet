@@ -71,4 +71,10 @@ class GamePageRepository {
         categoryId: categoryId,
         levelId: levelId,
       );
+
+  findGroupChallange({required String userId, required groupQuizId}) async =>
+      service.findGroupChallange(
+        userId: userId,
+        groupQuizId: groupQuizId,
+      );
 }

@@ -405,7 +405,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                         ),
                         child: AppButtonFeedBack(
                           onTap: () {
-                            FlutterBeep.beep();
+                            //FlutterBeep.beep();
 
                             ///IF MAX (BALANCE IS REACHED DON'T INCREMENT)
                             if (PagesUtil.getIncrementedBid(
@@ -457,7 +457,7 @@ class _GamePlayerInfoPageState extends State<GamePlayerInfoPage> {
                         ),
                         child: AppButtonFeedBack(
                           onTap: () {
-                            FlutterBeep.beep();
+                            //FlutterBeep.beep();
                             textEditingController.text =
                                 "${PagesUtil.getDescrimentedBid(textEditingController.text)}";
                             context

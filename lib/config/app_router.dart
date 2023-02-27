@@ -9,6 +9,7 @@ import 'package:quiz_bet/layer_buisness/blocs/bloc_category_page/category_page_b
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_checker/game_checker_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_get_info/game_get_info_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_challange_create/game_group_challange_create_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_challange_finder/game_group_challange_finder_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_create_challange/game_group_create_challange_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_gmae_history_saver/game_history_saver_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_home_page/home_page_bloc.dart';
@@ -78,7 +79,6 @@ class AppRouterPaths {
   static const String addMember = '/add_member';
   static const String joinGameQrScan = '/join_game_qr_scan';
   static const String joinGameFindGameScan = '/join_game_find_game_scan';
-
 }
 
 class AppRouter {
@@ -336,10 +336,30 @@ class AppRouter {
 
       case AppRouterPaths.joinGameFindGameScan:
         final args = settings.arguments as ScreenArguments;
-        builder = (_) => JoinGameGameFindPage( quizId: args.data['quiz_id'],);
+        builder = (_) => MultiRepositoryProvider(
+              providers: [
+                RepositoryProvider(
+                  create: (context) => GamePageRepository(
+                    service: GamePageService(),
+                  ),
+                ),
+                RepositoryProvider(
+                  create: (context) => AuthPageRepository(
+                    service: AuthPageService(),
+                  ),
+                ),
+              ],
+              child: BlocProvider(
+                create: (context) => GameGroupChallangeFinderBloc(
+                  gamePageRepository: context.read<GamePageRepository>(),
+                  authPageRepository: context.read<AuthPageRepository>(),
+                ),
+                child: JoinGameGameFindPage(
+                  quizId: args.data['quiz_id'],
+                ),
+              ),
+            );
         break;
-
-
 
       default:
         throw Exception('Invalid route: ${settings.name}');

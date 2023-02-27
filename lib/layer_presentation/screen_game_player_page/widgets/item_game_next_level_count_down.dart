@@ -234,7 +234,7 @@ class _ItemGameNextLevelCountDownState
               totalRepeatCount: 1,
 
               onNext: (i, b) {
-                FlutterBeep.beep();
+                //FlutterBeep.beep();
               },
               onFinished: () {
                 ///START PLAYING INITIAL GAME LEVEL

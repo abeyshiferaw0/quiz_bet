@@ -35,6 +35,25 @@ class _JoinGameQrScanPageState extends State<JoinGameQrScanPage> {
   }
 
   @override
+  void initState() {
+    Future.delayed(Duration(milliseconds: 700), () {
+      bool isUUID = PagesUtil.isUUID("92655bec-2c26-4d4e-b8f9-af77e6f8e645");
+
+      if (isUUID) {
+        Navigator.popAndPushNamed(
+          context,
+          AppRouterPaths.joinGameFindGameScan,
+          arguments: ScreenArguments(
+            data: {'quiz_id': "92655bec-2c26-4d4e-b8f9-af77e6f8e645"},
+          ),
+        );
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -158,6 +177,7 @@ class _JoinGameQrScanPageState extends State<JoinGameQrScanPage> {
         print("result=>> ${result == null ? 'null' : result!.code}");
 
         bool isUUID = PagesUtil.isUUID(scanData.code);
+        //bool isUUID = PagesUtil.isUUID("92655bec-2c26-4d4e-b8f9-af77e6f8e645");
 
         if (isUUID) {
           controller.stopCamera();

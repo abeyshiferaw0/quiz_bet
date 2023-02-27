@@ -1,7 +1,12 @@
 import 'package:bouncing_button/bouncing_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_challange_finder/game_group_challange_finder_bloc.dart';
+import 'package:quiz_bet/layer_data/models/page_data_models/find_group_challange_page_data.dart';
 import 'package:quiz_bet/layer_presentation/common/app_card.dart';
+import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
+import 'package:quiz_bet/layer_presentation/common/app_loading_widget.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 
@@ -11,7 +16,8 @@ import 'widgets/dialog_game_join_reject.dart';
 
 class JoinGameGameFindPage extends StatefulWidget {
   const JoinGameGameFindPage({
-    Key? key, required this.quizId,
+    Key? key,
+    required this.quizId,
   }) : super(key: key);
 
   final String quizId;
@@ -22,6 +28,15 @@ class JoinGameGameFindPage extends StatefulWidget {
 
 class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
   @override
+  void initState() {
+    context.read<GameGroupChallangeFinderBloc>().add(
+          FindeGameGroupChallangeEvent(groupQuizId: widget.quizId),
+        );
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -30,11 +45,46 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
             ///BUILD APP BAR
             buildAppBar(),
 
+            BlocConsumer<GameGroupChallangeFinderBloc,
+                GameGroupChallangeFinderState>(
+              listener:  (context, state) {
 
-           Container(
+              },
+              builder: (context, state) {
+                if (state is GameGroupChallangeFinderLoadingState) {
+                  return const AppLoadingWidget();
+                }
+
+                if (state is GameGroupChallangeFinderLoadingErrorState) {
+                  return AppErrorWidget(
+                    onTryAgain: () {
+                      context.read<GameGroupChallangeFinderBloc>().add(
+                            FindeGameGroupChallangeEvent(
+                              groupQuizId: widget.quizId,
+                            ),
+                          );
+                    },
+                  );
+                }
+
+                if (state is GameGroupChallangeFinderLoadedState) {
+                  return buildLoadedView(context,state.findGroupChallangePageData,);
+                }
+
+                return const SizedBox();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container buildLoadedView(BuildContext context, FindGroupChallangePageData findGroupChallangePageData) {
+    return Container(
       width: double.infinity,
       margin: EdgeInsets.symmetric(
-      horizontal: AppSizes.mp_w_4,
+        horizontal: AppSizes.mp_w_4,
       ),
       child: Material(
         borderRadius: BorderRadius.circular(AppSizes.radius_10),
@@ -58,10 +108,10 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                     Text(
                       "Category",
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: AppColors.grey,
-                        fontSize: AppSizes.font_12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                            color: AppColors.grey,
+                            fontSize: AppSizes.font_12,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                     Expanded(
                       child: SizedBox(),
@@ -78,12 +128,13 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                           width: AppSizes.mp_w_2,
                         ),
                         Text(
-                          "Sport",
-                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: AppColors.darkBlue,
-                            fontSize: AppSizes.font_14,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          findGroupChallangePageData.category.name.nameAm,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                    color: AppColors.darkBlue,
+                                    fontSize: AppSizes.font_14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                       ],
                     ),
@@ -103,21 +154,21 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                     Text(
                       "Betting Money",
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: AppColors.grey,
-                        fontSize: AppSizes.font_12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                            color: AppColors.grey,
+                            fontSize: AppSizes.font_12,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                     Expanded(
                       child: SizedBox(),
                     ),
                     Text(
-                      "15 ETB",
+                      "${findGroupChallangePageData.amountPerPerson.toStringAsFixed(2)} ETB",
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: AppColors.darkBlue,
-                        fontSize: AppSizes.font_14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                            color: AppColors.darkBlue,
+                            fontSize: AppSizes.font_14,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                   ],
                 ),
@@ -133,12 +184,12 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                 child: Row(
                   children: [
                     Text(
-                      "Selected Level",
+                      findGroupChallangePageData.gameLevel.name.nameAm,
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: AppColors.grey,
-                        fontSize: AppSizes.font_12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                            color: AppColors.grey,
+                            fontSize: AppSizes.font_12,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                     Expanded(
                       child: SizedBox(),
@@ -146,10 +197,10 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                     Text(
                       "Level One",
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: AppColors.darkBlue,
-                        fontSize: AppSizes.font_14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                            color: AppColors.darkBlue,
+                            fontSize: AppSizes.font_14,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                   ],
                 ),
@@ -181,21 +232,21 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                     Text(
                       "Winning Prize",
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: AppColors.grey,
-                        fontSize: AppSizes.font_12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                            color: AppColors.grey,
+                            fontSize: AppSizes.font_12,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                     Expanded(
                       child: SizedBox(),
                     ),
                     Text(
-                      "85 ETB",
+                      "${(findGroupChallangePageData.amountPerPerson*2).toStringAsFixed(2)} ETB",
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: AppColors.gold,
-                        fontSize: AppSizes.font_14,
-                        fontWeight: FontWeight.bold,
-                      ),
+                            color: AppColors.gold,
+                            fontSize: AppSizes.font_14,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ],
                 ),
@@ -213,13 +264,10 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                       child: Container(
                         color: AppColors.red,
                         padding: EdgeInsets.symmetric(
-                          vertical: AppSizes.mp_v_2*0.7,
+                          vertical: AppSizes.mp_v_2 * 0.7,
                         ),
                         child: BouncingButton(
                           onPressed: () {
-
-
-
                             showDialog<void>(
                               context: context,
                               builder: (BuildContext context) {
@@ -234,10 +282,10 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                                   .textTheme
                                   .bodyMedium!
                                   .copyWith(
-                                color: AppColors.white,
-                                fontSize: AppSizes.font_12,
-                                fontWeight: FontWeight.w600,
-                              ),
+                                    color: AppColors.white,
+                                    fontSize: AppSizes.font_12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                           ),
                         ),
@@ -247,16 +295,27 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                       child: Container(
                         color: AppColors.green,
                         padding: EdgeInsets.symmetric(
-                          vertical: AppSizes.mp_v_2*0.7,
+                          vertical: AppSizes.mp_v_2 * 0.7,
                         ),
                         child: BouncingButton(
                           onPressed: () {
-                            showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return const DialogGameBalanceNotEnough();
-                              },
-                            );
+
+                            if(findGroupChallangePageData.walletBalance<findGroupChallangePageData.amountPerPerson){
+                              showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return const DialogGameBalanceNotEnough();
+                                },
+                              );
+                            }else{
+                              showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return const DialogGameJoinAccept();
+                                },
+                              );
+                            }
+
                           },
                           child: Center(
                             child: Text(
@@ -265,10 +324,10 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                                   .textTheme
                                   .bodyMedium!
                                   .copyWith(
-                                color: AppColors.white,
-                                fontSize: AppSizes.font_12,
-                                fontWeight: FontWeight.w600,
-                              ),
+                                    color: AppColors.white,
+                                    fontSize: AppSizes.font_12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                           ),
                         ),
@@ -279,10 +338,6 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
               ),
             ],
           ),
-        ),
-      ),
-    ),
-          ],
         ),
       ),
     );

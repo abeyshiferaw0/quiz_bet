@@ -13,6 +13,7 @@ import 'package:quiz_bet/layer_data/models/game_question_choice.dart';
 import 'package:quiz_bet/layer_data/models/home_page_data.dart';
 import 'package:quiz_bet/config/token_interceptor.dart';
 import 'package:quiz_bet/layer_data/models/page_data_models/create_challange_page_data.dart';
+import 'package:quiz_bet/layer_data/models/page_data_models/find_group_challange_page_data.dart';
 
 import 'base_hasura_service.dart';
 
@@ -237,6 +238,41 @@ class GamePageService {
       );
 
       return quizGroupId;
+    } catch (e) {
+      log.e("startGameLevel => ${e.toString()}");
+      rethrow;
+    }
+  }
+
+  Future<FindGroupChallangePageData> findGroupChallange(
+      {required String userId, required groupQuizId}) async {
+    try {
+      ////
+      var responseOne = await baseHasuraService.query(
+        document: gqlGamePage.findGroupChallange(
+          userId: userId,
+          groupQuizId: groupQuizId,
+        ),
+      );
+
+      ///
+      var responseTwo = await baseHasuraService.mutation(
+        document: gqlGamePage.getUserBalace(),
+      );
+
+      log.i("getInitialInfoCreateChallange responseOne ${responseOne}");
+
+      log.i("getInitialInfoCreateChallange responseTwo ${responseTwo}");
+
+      return FindGroupChallangePageData(
+        category: Category.fromJson(responseOne['data']['game_quizGroup_by_pk']['categoryList']),
+        gameLevel: GameLevel.fromJson(responseOne['data']['game_quizGroup_by_pk']['level']),
+        amountPerPerson: double.parse(responseOne['data']['game_quizGroup_by_pk']['amount_per_person'].toString().replaceAll('\$', "")),
+        walletBalance:   100.0,
+        // walletBalance: responseTwo['data']['getWallet']['balance'] is int
+        //     ? (responseTwo['data']['getWallet']['balance'] as int).toDouble()
+        //     : responseTwo['data']['getWallet']['balance'],
+      );
     } catch (e) {
       log.e("startGameLevel => ${e.toString()}");
       rethrow;
