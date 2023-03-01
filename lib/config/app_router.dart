@@ -355,7 +355,7 @@ class AppRouter {
                   authPageRepository: context.read<AuthPageRepository>(),
                 ),
                 child: JoinGameGameFindPage(
-                  quizId: args.data['quiz_id'],
+                  groupQuizId: args.data['group_quiz_id'],
                 ),
               ),
             );

@@ -32,6 +32,7 @@ class AppAssets {
   static const String questionLottie = "assets/lottie/question.json";
   static const String lockLottie = "assets/lottie/lock.json";
   static const String createNewPasswordLottie = "assets/lottie/create_new_password.json";
+  static const String gameLoading = "assets/lottie/game_loading.json";
 
 
 

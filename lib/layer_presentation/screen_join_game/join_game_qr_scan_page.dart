@@ -36,19 +36,19 @@ class _JoinGameQrScanPageState extends State<JoinGameQrScanPage> {
 
   @override
   void initState() {
-    Future.delayed(Duration(milliseconds: 700), () {
-      bool isUUID = PagesUtil.isUUID("92655bec-2c26-4d4e-b8f9-af77e6f8e645");
-
-      if (isUUID) {
-        Navigator.popAndPushNamed(
-          context,
-          AppRouterPaths.joinGameFindGameScan,
-          arguments: ScreenArguments(
-            data: {'quiz_id': "92655bec-2c26-4d4e-b8f9-af77e6f8e645"},
-          ),
-        );
-      }
-    });
+    // Future.delayed(Duration(milliseconds: 700), () {
+    //   bool isUUID = PagesUtil.isUUID("92655bec-2c26-4d4e-b8f9-af77e6f8e645");
+    //
+    //   if (isUUID) {
+    //     Navigator.popAndPushNamed(
+    //       context,
+    //       AppRouterPaths.joinGameFindGameScan,
+    //       arguments: ScreenArguments(
+    //         data: {'group_quiz_id': "92655bec-2c26-4d4e-b8f9-af77e6f8e645"},
+    //       ),
+    //     );
+    //   }
+    // });
 
     super.initState();
   }
@@ -186,7 +186,7 @@ class _JoinGameQrScanPageState extends State<JoinGameQrScanPage> {
             context,
             AppRouterPaths.joinGameFindGameScan,
             arguments: ScreenArguments(
-              data: {'quiz_id': scanData.code},
+              data: {'group_quiz_id': scanData.code},
             ),
           );
         }

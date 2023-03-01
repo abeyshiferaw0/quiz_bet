@@ -90,7 +90,7 @@ class BaseHasuraService {
       log.e("HASURA ERROR => ${e.toString()}");
 
       ///IF ERROR CHECK IF TOKEN EXPIRED
-      if (e.toString().toLowerCase().contains('unauthorized')) {
+      if (e.toString().contains('Unauthorized')) {
         try {
           ///IF REFRESHING SUCCESSFULLY TRY REQUEST AGAIN
           var refreshTokenResult = await refreshToken();

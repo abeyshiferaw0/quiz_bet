@@ -77,4 +77,11 @@ class GamePageRepository {
         userId: userId,
         groupQuizId: groupQuizId,
       );
+
+  joinGroupGame({required String userId, required String  groupQuizId,required String  categoryId}) async =>
+      service.joinGroupGame(
+        userId: userId,
+        groupQuizId: groupQuizId,
+        categoryId: categoryId,
+      );
 }

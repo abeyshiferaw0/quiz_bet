@@ -7,7 +7,10 @@ import 'package:quiz_bet/theme/app_sizes.dart';
 import 'package:sizer/sizer.dart';
 
 class DialogGameJoinAccept extends StatelessWidget {
-  const DialogGameJoinAccept({Key? key}) : super(key: key);
+  const DialogGameJoinAccept({Key? key, required this.onGameJoin}) : super(key: key);
+
+
+  final VoidCallback onGameJoin;
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +123,8 @@ class DialogGameJoinAccept extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
+
+                          onGameJoin();
 
                         },
                         child: Text(

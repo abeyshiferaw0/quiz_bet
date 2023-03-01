@@ -213,38 +213,89 @@ class GqlGamePage {
       {required String userId, required String groupQuizId}) {
     return """
         query mm {
-  game_quizGroup_by_pk(id: "01a6d438-bcfe-47d8-9f38-8083b8df62a2") {
-    amount_per_person
-    categoryList {
-      id
-      icon {
-        id
-        name
+          game_quizGroup_by_pk(id: "01a6d438-bcfe-47d8-9f38-8083b8df62a2") {
+            amount_per_person
+            categoryList {
+              id
+              icon {
+                id
+                name
+              }
+              name_json
+              description_json
+            }
+            level {
+              id
+              name_json
+              level_key
+              odds
+              questions {
+                id
+                question_json
+                hint
+                active
+                max_time_in_seconds
+                quizQuestionChoice {
+                  id
+                  choices
+                  correct
+                }
+              }
+            }
+          }
       }
-      name_json
-      description_json
-    }
-    level {
-      id
-      name_json
-      level_key
-      odds
-      questions {
-        id
-        question_json
-        hint
-        active
-        max_time_in_seconds
-        quizQuestionChoice {
-          id
-          choices
-          correct
-        }
-      }
-    }
-  }
-}
 
+    """;
+  }
+
+  String joinGroupGame(
+      {required String userId, required String groupQuizId}) {
+    return """
+         mutation joinGroupGame {
+            insert_game_groupActivePlayer_one(object: {isActive: true, user_id: "$userId", quiz_group_id: "$groupQuizId"}) {
+              id
+            }
+         }
+    """;
+  }
+
+
+  String getGroupGameInfo({required String userId, required String categoryId}){
+    return """
+           query getGameLevelData {
+              game_categoryList_by_pk(id:"$categoryId"){
+                id
+                name_json
+                description_json
+                icon{
+                  id
+                  name
+                }
+                levels(order_by: {level_key: asc}){
+                  id
+                  name_json
+                  level_key
+                  odds
+                  questions{
+                    id
+                    question_json
+                    hint
+                    active
+                    max_time_in_seconds
+                    quizQuestionChoice{
+                      id
+                      choices
+                      correct
+                    }
+                  }
+                }
+              }
+              system_percentage(where:{code:{_eq:VAT}}){
+                name
+                percentage
+              }
+          }        
+ 
     """;
   }
 }

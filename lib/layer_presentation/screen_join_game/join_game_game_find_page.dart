@@ -2,14 +2,20 @@ import 'package:bouncing_button/bouncing_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:quiz_bet/config/app_router.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_challange_finder/game_group_challange_finder_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_joining/game_group_joining_bloc.dart';
 import 'package:quiz_bet/layer_data/models/page_data_models/find_group_challange_page_data.dart';
+import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
+import 'package:quiz_bet/layer_data/repositories/repository_game_page.dart';
+import 'package:quiz_bet/layer_data/services/service_auth_page.dart';
+import 'package:quiz_bet/layer_data/services/service_game_page.dart';
 import 'package:quiz_bet/layer_presentation/common/app_card.dart';
 import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
 import 'package:quiz_bet/layer_presentation/common/app_loading_widget.dart';
+import 'package:quiz_bet/layer_presentation/screen_join_game/widgets/dialog_group_game_joining.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
-
 import 'widgets/dialog_game_balance_not_enough.dart';
 import 'widgets/dialog_game_join_accept.dart';
 import 'widgets/dialog_game_join_reject.dart';
@@ -17,10 +23,10 @@ import 'widgets/dialog_game_join_reject.dart';
 class JoinGameGameFindPage extends StatefulWidget {
   const JoinGameGameFindPage({
     Key? key,
-    required this.quizId,
+    required this.groupQuizId,
   }) : super(key: key);
 
-  final String quizId;
+  final String groupQuizId;
 
   @override
   State<JoinGameGameFindPage> createState() => _JoinGameGameFindPageState();
@@ -30,7 +36,7 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
   @override
   void initState() {
     context.read<GameGroupChallangeFinderBloc>().add(
-          FindeGameGroupChallangeEvent(groupQuizId: widget.quizId),
+          FindeGameGroupChallangeEvent(groupQuizId: widget.groupQuizId),
         );
 
     super.initState();
@@ -47,9 +53,7 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
 
             BlocConsumer<GameGroupChallangeFinderBloc,
                 GameGroupChallangeFinderState>(
-              listener:  (context, state) {
-
-              },
+              listener: (context, state) {},
               builder: (context, state) {
                 if (state is GameGroupChallangeFinderLoadingState) {
                   return const AppLoadingWidget();
@@ -60,7 +64,7 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                     onTryAgain: () {
                       context.read<GameGroupChallangeFinderBloc>().add(
                             FindeGameGroupChallangeEvent(
-                              groupQuizId: widget.quizId,
+                              groupQuizId: widget.groupQuizId,
                             ),
                           );
                     },
@@ -68,7 +72,10 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                 }
 
                 if (state is GameGroupChallangeFinderLoadedState) {
-                  return buildLoadedView(context,state.findGroupChallangePageData,);
+                  return buildLoadedView(
+                    context,
+                    state.findGroupChallangePageData,
+                  );
                 }
 
                 return const SizedBox();
@@ -80,7 +87,8 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
     );
   }
 
-  Container buildLoadedView(BuildContext context, FindGroupChallangePageData findGroupChallangePageData) {
+  Container buildLoadedView(BuildContext context,
+      FindGroupChallangePageData findGroupChallangePageData) {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.symmetric(
@@ -241,7 +249,7 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                       child: SizedBox(),
                     ),
                     Text(
-                      "${(findGroupChallangePageData.amountPerPerson*2).toStringAsFixed(2)} ETB",
+                      "${(findGroupChallangePageData.amountPerPerson * 2).toStringAsFixed(2)} ETB",
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: AppColors.gold,
                             fontSize: AppSizes.font_14,
@@ -299,23 +307,76 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                         ),
                         child: BouncingButton(
                           onPressed: () {
-
-                            if(findGroupChallangePageData.walletBalance<findGroupChallangePageData.amountPerPerson){
+                            if (findGroupChallangePageData.walletBalance <
+                                findGroupChallangePageData.amountPerPerson) {
                               showDialog<void>(
                                 context: context,
                                 builder: (BuildContext context) {
                                   return const DialogGameBalanceNotEnough();
                                 },
                               );
-                            }else{
+                            } else {
                               showDialog<void>(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  return const DialogGameJoinAccept();
+                                  return DialogGameJoinAccept(
+                                    onGameJoin: () {
+                                      ///CLOSE PREVIOUS DIALOG
+                                      Navigator.pop(context);
+
+                                      ///SHOW JOINING DIALOG
+                                      showDialog<void>(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return MultiRepositoryProvider(
+                                            providers: [
+                                              RepositoryProvider(
+                                                create: (context) =>
+                                                    GamePageRepository(
+                                                  service: GamePageService(),
+                                                ),
+                                              ),
+                                              RepositoryProvider(
+                                                create: (context) =>
+                                                    AuthPageRepository(
+                                                  service: AuthPageService(),
+                                                ),
+                                              ),
+                                            ],
+                                            child: BlocProvider(
+                                              create: (context) =>
+                                                  GameGroupJoiningBloc(
+                                                gamePageRepository: context
+                                                    .read<GamePageRepository>(),
+                                                authPageRepository: context
+                                                    .read<AuthPageRepository>(),
+                                              ),
+                                              child: DialogGroupGameJoining(
+                                                groupQuizId: widget.groupQuizId,
+                                                categoryId:
+                                                    findGroupChallangePageData
+                                                        .category.id,
+                                                onGameJoined: () {
+                                                  print("JOINEDDD => ");
+
+                                                  Navigator.pop(context);
+
+                                                  Navigator.popAndPushNamed(
+                                                    context,
+                                                    AppRouterPaths
+                                                        .authForgetPass,
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
                                 },
                               );
                             }
-
                           },
                           child: Center(
                             child: Text(

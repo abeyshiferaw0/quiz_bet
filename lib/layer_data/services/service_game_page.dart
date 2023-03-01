@@ -5,6 +5,7 @@ import 'package:quiz_bet/layer_data/graph_ql/gql_category_page.dart';
 import 'package:quiz_bet/layer_data/graph_ql/gql_game_page.dart';
 import 'package:quiz_bet/layer_data/graph_ql/gql_home_page.dart';
 import 'package:quiz_bet/layer_data/models/category.dart';
+import 'package:quiz_bet/layer_data/models/game_group_info.dart';
 import 'package:quiz_bet/layer_data/models/game_info.dart';
 import 'package:quiz_bet/layer_data/models/game_initial_info.dart';
 import 'package:quiz_bet/layer_data/models/game_level.dart';
@@ -272,6 +273,43 @@ class GamePageService {
         // walletBalance: responseTwo['data']['getWallet']['balance'] is int
         //     ? (responseTwo['data']['getWallet']['balance'] as int).toDouble()
         //     : responseTwo['data']['getWallet']['balance'],
+      );
+    } catch (e) {
+      log.e("startGameLevel => ${e.toString()}");
+      rethrow;
+    }
+  }
+
+  Future<GameGroupInfo> joinGroupGame({required String userId, required groupQuizId,required String categoryId}) async{
+    try {
+      ////
+      var responseOne = await baseHasuraService.mutation(
+        document: gqlGamePage.joinGroupGame(
+          userId: userId,
+          groupQuizId: groupQuizId,
+        ),
+      );
+
+      ////
+      var responseTwo = await baseHasuraService.query(
+        document: gqlGamePage.getGroupGameInfo(
+          userId: userId,
+          categoryId: categoryId,
+        ),
+      );
+
+
+      log.i("getInitialInfoCreateChallange responseOne ${responseOne}");
+      log.i("getInitialInfoCreateChallange responseOne ${responseTwo}");
+
+
+      ///PARSE AND ASSIGN VALUES
+      return GameGroupInfo(
+        groupQuizId: responseOne['data']['insert_game_groupActivePlayer_one']['id'],
+        category: Category.fromJson(responseTwo['data']['game_categoryList_by_pk']),
+        levels: (responseTwo['data']['game_categoryList_by_pk']['levels'] as List)
+            .map((level) => GameLevel.fromJson(level))
+            .toList(),
       );
     } catch (e) {
       log.e("startGameLevel => ${e.toString()}");
