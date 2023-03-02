@@ -26,10 +26,10 @@ class GameGroupChallangeCreateLoadingErrorState extends GameGroupChallangeCreate
 
 class GameGroupChallangeCreateLoadedState extends GameGroupChallangeCreateState {
 
-  final String groupQuizId;
+  final GameGroupInfo gameGroupInfo;
 
-  const GameGroupChallangeCreateLoadedState({required this.groupQuizId});
+  const GameGroupChallangeCreateLoadedState({required this.gameGroupInfo});
 
   @override
-  List<Object> get props => [groupQuizId];
+  List<Object> get props => [gameGroupInfo];
 }

@@ -5,6 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiz_bet/config/app_router.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_challange_finder/game_group_challange_finder_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_joining/game_group_joining_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/game_group_started_listner_subscription/game_group_started_listner_subscription_bloc.dart';
+import 'package:quiz_bet/layer_data/models/game_group_info.dart';
 import 'package:quiz_bet/layer_data/models/page_data_models/find_group_challange_page_data.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_game_page.dart';
@@ -14,6 +16,7 @@ import 'package:quiz_bet/layer_presentation/common/app_card.dart';
 import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
 import 'package:quiz_bet/layer_presentation/common/app_loading_widget.dart';
 import 'package:quiz_bet/layer_presentation/screen_join_game/widgets/dialog_group_game_joining.dart';
+import 'package:quiz_bet/layer_presentation/screen_join_game/widgets/dialog_group_game_waiting_for_start.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 import 'widgets/dialog_game_balance_not_enough.dart';
@@ -356,15 +359,75 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                                                 categoryId:
                                                     findGroupChallangePageData
                                                         .category.id,
-                                                onGameJoined: () {
+                                                onGameJoined: (GameGroupInfo
+                                                    gameGroupInfo) {
                                                   print("JOINEDDD => ");
 
                                                   Navigator.pop(context);
 
-                                                  Navigator.popAndPushNamed(
-                                                    context,
-                                                    AppRouterPaths
-                                                        .authForgetPass,
+                                                  ///SHOW JOINING DIALOG
+                                                  showDialog<void>(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return MultiRepositoryProvider(
+                                                        providers: [
+                                                          RepositoryProvider(
+                                                            create: (context) =>
+                                                                GamePageRepository(
+                                                              service:
+                                                                  GamePageService(),
+                                                            ),
+                                                          ),
+                                                          RepositoryProvider(
+                                                            create: (context) =>
+                                                                AuthPageRepository(
+                                                              service:
+                                                                  AuthPageService(),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                        child: BlocProvider(
+                                                          create: (context) =>
+                                                              GameGroupStartedListnerSubscriptionBloc(
+                                                            gamePageRepository:
+                                                                context.read<
+                                                                    GamePageRepository>(),
+                                                            authPageRepository:
+                                                                context.read<
+                                                                    AuthPageRepository>(),
+                                                            quizId: gameGroupInfo
+                                                                .groupQuizId,
+                                                          ),
+                                                          child:
+                                                              DialogGroupGameWaitingForStart(
+                                                            gameGroupInfo:
+                                                                gameGroupInfo,
+                                                            onGameStarted: () {
+                                                              print(
+                                                                  "onGameStarted => ");
+
+                                                              Navigator.pop(
+                                                                  context);
+
+                                                              Navigator
+                                                                  .popAndPushNamed(
+                                                                context,
+                                                                AppRouterPaths
+                                                                    .gameGroupStartCountDownPage,
+                                                                arguments:
+                                                                    ScreenArguments(
+                                                                  data: {
+                                                                    'group_game_info':
+                                                                        gameGroupInfo
+                                                                  },
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
                                                   );
                                                 },
                                               ),

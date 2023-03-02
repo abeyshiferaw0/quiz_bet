@@ -6,11 +6,15 @@ class GameGroupInfo extends Equatable {
   final String groupQuizId;
   final Category category;
   final List<GameLevel> levels;
+  final double amountPerPerson;
+  final int vatPer;
 
   const GameGroupInfo({
     required this.groupQuizId,
     required this.category,
     required this.levels,
+    required this.amountPerPerson,
+    required this.vatPer,
   });
 
   @override
@@ -18,16 +22,10 @@ class GameGroupInfo extends Equatable {
     groupQuizId,
         category,
         levels,
+    amountPerPerson,
+    vatPer
       ];
 
-  factory GameGroupInfo.fromJson(Map<String, dynamic> json) {
-    return GameGroupInfo(
-      groupQuizId: json["groupQuizId"],
-      category: Category.fromJson(json["category"]),
-      levels: (json["levels"] as List)
-          .map((level) => GameLevel.fromJson(level))
-          .toList(),
-    );
-  }
+
 //
 }

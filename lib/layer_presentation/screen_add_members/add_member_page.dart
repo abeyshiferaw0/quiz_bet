@@ -1,16 +1,29 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bouncing_button/bouncing_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:quiz_bet/config/app_router.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_joined_subscription/game_group_joined_subscription_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_starting/game_group_starting_bloc.dart';
+import 'package:quiz_bet/layer_data/models/game_group_info.dart';
+import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
+import 'package:quiz_bet/layer_data/repositories/repository_game_page.dart';
+import 'package:quiz_bet/layer_data/services/service_auth_page.dart';
+import 'package:quiz_bet/layer_data/services/service_game_page.dart';
 import 'package:quiz_bet/layer_presentation/common/app_custom_tab_indicator.dart';
+import 'package:quiz_bet/layer_presentation/screen_add_members/widgets/joined_players_list.dart';
 import 'package:quiz_bet/layer_presentation/screen_add_members/widgets/tab_invite_by_id.dart';
 import 'package:quiz_bet/layer_presentation/screen_add_members/widgets/tab_page_qr_code.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 
-class AddMembersPage extends StatefulWidget {
-  const AddMembersPage({Key? key, required this.quizId}) : super(key: key);
+import 'widgets/dialog_group_game_starting.dart';
 
-  final String quizId;
+class AddMembersPage extends StatefulWidget {
+  const AddMembersPage({Key? key, required this.gameGroupInfo}) : super(key: key);
+
+  final GameGroupInfo gameGroupInfo;
 
   @override
   State<AddMembersPage> createState() => _AddMembersPageState();
@@ -18,6 +31,15 @@ class AddMembersPage extends StatefulWidget {
 
 class _AddMembersPageState extends State<AddMembersPage> {
   final TextEditingController textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    // context.read<GameGroupJoinedSubscriptionBloc>().add(
+    //   SubscibeGameGroupJoinedEvent(quizGroupId: widget.quizGroupId),
+    // );
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +52,11 @@ class _AddMembersPageState extends State<AddMembersPage> {
               ///BUILD APP BAR
               buildAppBar(),
 
+              ///JOINED PLAYERS LIST
+              JoinedPlayersList(),
+
               SizedBox(
-                height: AppSizes.mp_v_1 / 2,
+                height: AppSizes.mp_v_2,
               ),
 
               ///BUILD TAB BARS
@@ -54,17 +79,23 @@ class _AddMembersPageState extends State<AddMembersPage> {
                       child: buildTabPages(),
                     ),
 
-                    ///BUILD FINISH BUTTON
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: buildFinishButton(),
-                    ),
+                    // ///BUILD FINISH BUTTON
+                    // Align(
+                    //   alignment: Alignment.bottomCenter,
+                    //   child: buildFinishButton(),
+                    // ),
                   ],
                 ),
               ),
 
               SizedBox(
-                height: AppSizes.mp_v_1,
+                height: AppSizes.mp_v_2,
+              ),
+
+              buildStartButtonBlocBuilder(),
+
+              SizedBox(
+                height: AppSizes.mp_v_2,
               ),
             ],
           ),
@@ -98,8 +129,8 @@ class _AddMembersPageState extends State<AddMembersPage> {
   buildTabPages() {
     return TabBarView(
       children: [
-        TabPageFriends(
-          quizId: widget.quizId,
+        TabInviteQr(
+          gameGroupInfo: widget.gameGroupInfo,
         ),
         TabInviteById(),
       ],
@@ -166,7 +197,21 @@ class _AddMembersPageState extends State<AddMembersPage> {
     );
   }
 
-  buildFinishButton() {
+  buildStartButtonBlocBuilder() {
+    return BlocBuilder<GameGroupJoinedSubscriptionBloc,
+        GameGroupJoinedSubscriptionState>(
+      builder: (context, state) {
+        if (state is GameGroupJoinedSubState) {
+          if (state.gameGroupJoinedSubscriptions.isNotEmpty) {
+            return buildStartButton(context, true);
+          }
+        }
+        return buildStartButton(context, false);
+      },
+    );
+  }
+
+  Container buildStartButton(BuildContext context, bool canStartGame) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: AppSizes.mp_w_6),
@@ -187,10 +232,67 @@ class _AddMembersPageState extends State<AddMembersPage> {
           ),
         ),
         onPressed: () {
-          Navigator.pop(context);
+          if (canStartGame) {
+            ///SHOW JOINING DIALOG
+            showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return MultiRepositoryProvider(
+                  providers: [
+                    RepositoryProvider(
+                      create: (context) =>
+                          GamePageRepository(
+                            service: GamePageService(),
+                          ),
+                    ),
+                    RepositoryProvider(
+                      create: (context) =>
+                          AuthPageRepository(
+                            service: AuthPageService(),
+                          ),
+                    ),
+                  ],
+                  child: BlocProvider(
+                    create: (context) =>
+                        GameGroupStartingBloc(
+                          gamePageRepository: context
+                              .read<GamePageRepository>(),
+                          authPageRepository: context
+                              .read<AuthPageRepository>(),
+                        ),
+                    child: DialogGroupGameStarting(
+                      gameGroupInfo: widget.gameGroupInfo,
+
+                      onGameStarted: () {
+                        print("STARTED => ");
+                        Navigator
+                            .popAndPushNamed(
+                          context,
+                          AppRouterPaths
+                              .gameGroupStartCountDownPage,
+                          arguments:
+                          ScreenArguments(
+                            data: {
+                              'group_game_info':
+                              widget.gameGroupInfo,
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          } else {
+            AnimatedSnackBar.material(
+              "No One Joined Game",
+              type: AnimatedSnackBarType.error,
+            ).show(context);
+          }
         },
         child: Text(
-          'Finish',
+          'Start Game',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
                 color: AppColors.white,

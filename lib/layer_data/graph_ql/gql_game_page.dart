@@ -157,6 +157,7 @@ class GqlGamePage {
         mutation createGroupGame{
           insert_game_quizGroup_one(object:{amount_per_person:"$amountPerPerson",category_id:"$categoryId",users_id:"$userId",level_id:"$levelId"}){
             id
+            amount_per_person
           }
         }
     """;
@@ -260,7 +261,7 @@ class GqlGamePage {
   }
 
 
-  String getGroupGameInfo({required String userId, required String categoryId}){
+  String getGroupGameInfo({required String userId, required String categoryId, required groupQuizId}){
     return """
            query getGameLevelData {
               game_categoryList_by_pk(id:"$categoryId"){
@@ -294,8 +295,50 @@ class GqlGamePage {
                 name
                 percentage
               }
+              
+              game_quizGroup_by_pk(id: "$groupQuizId") {
+                amount_per_person
+              }
           }        
  
+    """;
+  }
+
+  groupGameJoinedSubscribe({required String userId,required String quizGroupId}){
+    return """
+   
+      subscription groupGameJoinedSubscribe{
+        game_groupActivePlayer(where:{user_id:{_neq:"$userId"},quiz_group_id:{_eq:"$quizGroupId"}}){
+          user{
+            id
+            full_name
+            user_name
+            phone_number
+          }
+        }
+      }
+   
+    """;
+  }
+
+  String startGroupGame({required String userId, required String quizGroupId}){
+    return """
+    mutation m{
+      update_game_quizGroup_by_pk(pk_columns:{id:"$quizGroupId"},_set:{status:"STARTED"}){
+        id
+      }
+    }
+    """;
+  }
+
+  listenForGroupGameStarted({required String userId, required String quizGroupId}) {
+    return """
+      subscription listenForGroupGameStarted{
+        game_quizGroup_by_pk(id:"$quizGroupId"){
+          id
+          status
+        }
+      }
     """;
   }
 }

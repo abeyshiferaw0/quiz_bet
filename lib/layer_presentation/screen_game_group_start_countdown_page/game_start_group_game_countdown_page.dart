@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_beep/flutter_beep.dart';
 import 'package:quiz_bet/config/app_router.dart';
+import 'package:quiz_bet/layer_data/models/game_group_info.dart';
 import 'package:quiz_bet/layer_data/models/game_info.dart';
 import 'package:quiz_bet/theme/app_assets.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
@@ -11,20 +12,23 @@ import 'package:quiz_bet/theme/app_sizes.dart';
 class GameStartGroupGameCountDownPage extends StatefulWidget {
   const GameStartGroupGameCountDownPage(
       {Key? key,
-      required this.gameInfo,
-      required this.amountToBet,
-      required this.vatPer})
+      required this.gameGroupInfo,})
       : super(key: key);
 
-  final GameInfo gameInfo;
-  final int amountToBet;
-  final double vatPer;
+  final GameGroupInfo gameGroupInfo;
 
   @override
   State<GameStartGroupGameCountDownPage> createState() => _GameStartGroupGameCountDownPageState();
 }
 
 class _GameStartGroupGameCountDownPageState extends State<GameStartGroupGameCountDownPage> {
+
+  @override
+  void initState() {
+   print("object ${widget.gameGroupInfo.groupQuizId}");
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -282,17 +286,7 @@ class _GameStartGroupGameCountDownPageState extends State<GameStartGroupGameCoun
               onFinished: () {
                 Navigator.pop(context);
 
-                Navigator.pushNamed(
-                  context,
-                  AppRouterPaths.gamePlayerPage,
-                  arguments: ScreenArguments(
-                    data: {
-                      "gameInfo": widget.gameInfo,
-                      "amountToBet": widget.amountToBet,
-                      "vatPer": widget.vatPer,
-                    },
-                  ),
-                );
+
               },
               animatedTexts: [
                 FadeAnimatedText(

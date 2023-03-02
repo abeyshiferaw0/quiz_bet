@@ -211,7 +211,7 @@ class GamePageService {
     }
   }
 
-  Future<String> createGroupGame(
+  Future<GameGroupInfo> createGroupGame(
       {required String userId,
       required String amountPerPerson,
       required String categoryId,
@@ -229,6 +229,8 @@ class GamePageService {
 
       String quizGroupId =
           responseOne['data']['insert_game_quizGroup_one']['id'];
+      String resAmountPerPerson =
+          responseOne['data']['insert_game_quizGroup_one']['amount_per_person'];
 
       ///ADD USER IN ACTIVE PLAYERS LIST
       var responseTwo = await baseHasuraService.mutation(
@@ -238,7 +240,30 @@ class GamePageService {
         ),
       );
 
-      return quizGroupId;
+      ////
+      var responseThree = await baseHasuraService.query(
+        document: gqlGamePage.getGroupGameInfo(
+          userId: userId,
+          categoryId: categoryId,
+          groupQuizId: quizGroupId,
+        ),
+      );
+
+      int varPer = (responseThree['data']['system_percentage'] as List)
+          .first['percentage'];
+
+      ///PARSE AND ASSIGN VALUES
+      return GameGroupInfo(
+        groupQuizId: quizGroupId,
+        amountPerPerson: double.parse(resAmountPerPerson.replaceAll("\$", '')),
+        vatPer: varPer,
+        category:
+            Category.fromJson(responseThree['data']['game_categoryList_by_pk']),
+        levels:
+            (responseThree['data']['game_categoryList_by_pk']['levels'] as List)
+                .map((level) => GameLevel.fromJson(level))
+                .toList(),
+      );
     } catch (e) {
       log.e("startGameLevel => ${e.toString()}");
       rethrow;
@@ -266,10 +291,15 @@ class GamePageService {
       log.i("getInitialInfoCreateChallange responseTwo ${responseTwo}");
 
       return FindGroupChallangePageData(
-        category: Category.fromJson(responseOne['data']['game_quizGroup_by_pk']['categoryList']),
-        gameLevel: GameLevel.fromJson(responseOne['data']['game_quizGroup_by_pk']['level']),
-        amountPerPerson: double.parse(responseOne['data']['game_quizGroup_by_pk']['amount_per_person'].toString().replaceAll('\$', "")),
-        walletBalance:   100.0,
+        category: Category.fromJson(
+            responseOne['data']['game_quizGroup_by_pk']['categoryList']),
+        gameLevel: GameLevel.fromJson(
+            responseOne['data']['game_quizGroup_by_pk']['level']),
+        amountPerPerson: double.parse(responseOne['data']
+                ['game_quizGroup_by_pk']['amount_per_person']
+            .toString()
+            .replaceAll('\$', "")),
+        walletBalance: 100.0,
         // walletBalance: responseTwo['data']['getWallet']['balance'] is int
         //     ? (responseTwo['data']['getWallet']['balance'] as int).toDouble()
         //     : responseTwo['data']['getWallet']['balance'],
@@ -280,7 +310,10 @@ class GamePageService {
     }
   }
 
-  Future<GameGroupInfo> joinGroupGame({required String userId, required groupQuizId,required String categoryId}) async{
+  Future<GameGroupInfo> joinGroupGame(
+      {required String userId,
+      required groupQuizId,
+      required String categoryId}) async {
     try {
       ////
       var responseOne = await baseHasuraService.mutation(
@@ -295,25 +328,79 @@ class GamePageService {
         document: gqlGamePage.getGroupGameInfo(
           userId: userId,
           categoryId: categoryId,
+          groupQuizId: groupQuizId,
         ),
       );
-
 
       log.i("getInitialInfoCreateChallange responseOne ${responseOne}");
       log.i("getInitialInfoCreateChallange responseOne ${responseTwo}");
 
+      String resAmountPerPerson =
+          responseTwo['data']['game_quizGroup_by_pk']['amount_per_person'];
+      int vatPer = (responseTwo['data']['system_percentage'] as List)
+          .first['percentage'];
 
       ///PARSE AND ASSIGN VALUES
       return GameGroupInfo(
-        groupQuizId: responseOne['data']['insert_game_groupActivePlayer_one']['id'],
-        category: Category.fromJson(responseTwo['data']['game_categoryList_by_pk']),
-        levels: (responseTwo['data']['game_categoryList_by_pk']['levels'] as List)
-            .map((level) => GameLevel.fromJson(level))
-            .toList(),
+        groupQuizId: groupQuizId,
+        amountPerPerson: double.parse(resAmountPerPerson.replaceAll("\$", '')),
+        vatPer: vatPer,
+        category:
+            Category.fromJson(responseTwo['data']['game_categoryList_by_pk']),
+        levels:
+            (responseTwo['data']['game_categoryList_by_pk']['levels'] as List)
+                .map((level) => GameLevel.fromJson(level))
+                .toList(),
       );
     } catch (e) {
       log.e("startGameLevel => ${e.toString()}");
       rethrow;
     }
+  }
+
+  Future<Snapshot> listenForGroupGameJoin(
+      {required String userId, required String quizGroupId}) async {
+    Snapshot snapshot = await baseHasuraService.subscribe(
+      document: gqlGamePage.groupGameJoinedSubscribe(
+        userId: userId,
+        quizGroupId: quizGroupId,
+      ),
+    );
+
+    return snapshot;
+  }
+
+  startGroupGame({required String userId, required String quizGroupId}) async {
+    print("MUTATTION=> ${gqlGamePage.startGroupGame(
+      userId: userId,
+      quizGroupId: quizGroupId,
+    )}");
+
+    try {
+      ////
+      var responseOne = await baseHasuraService.mutation(
+        document: gqlGamePage.startGroupGame(
+          userId: userId,
+          quizGroupId: quizGroupId,
+        ),
+      );
+
+      return;
+    } catch (e) {
+      log.e("startGameLevel => ${e.toString()}");
+      rethrow;
+    }
+  }
+
+  Future<Snapshot> listenForGroupGameStarted(
+      {required String userId, required String quizGroupId}) async {
+    Snapshot snapshot = await baseHasuraService.subscribe(
+      document: gqlGamePage.listenForGroupGameStarted(
+        userId: userId,
+        quizGroupId: quizGroupId,
+      ),
+    );
+
+    return snapshot;
   }
 }

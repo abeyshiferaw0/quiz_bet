@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
-import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_joining/game_group_joining_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_starting/game_group_starting_bloc.dart';
 import 'package:quiz_bet/layer_data/models/game_group_info.dart';
 import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
 import 'package:quiz_bet/theme/app_assets.dart';
@@ -10,33 +10,29 @@ import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 import 'package:sizer/sizer.dart';
 
-class DialogGroupGameJoining extends StatefulWidget {
-  const DialogGroupGameJoining({
+class DialogGroupGameStarting extends StatefulWidget {
+  const DialogGroupGameStarting({
     Key? key,
-    required this.groupQuizId,
-    required this.categoryId,
-    required this.onGameJoined,
+    required this.gameGroupInfo, required this.onGameStarted,
   }) : super(key: key);
 
-  final String groupQuizId;
-  final String categoryId;
-  final Function(GameGroupInfo gameGroupInfo) onGameJoined;
+  final GameGroupInfo gameGroupInfo;
+  final VoidCallback onGameStarted;
 
   @override
-  State<DialogGroupGameJoining> createState() => _DialogGroupGameJoiningState();
+  State<DialogGroupGameStarting> createState() => _DialogGroupGameStartingState();
 }
 
-class _DialogGroupGameJoiningState extends State<DialogGroupGameJoining> {
+class _DialogGroupGameStartingState extends State<DialogGroupGameStarting> {
   @override
   void initState() {
     super.initState();
 
-    context.read<GameGroupJoiningBloc>().add(
-          JoinGameGroupEvent(
-            groupQuizId: widget.groupQuizId,
-            categoryId: widget.categoryId,
-          ),
-        );
+    context.read<GameGroupStartingBloc>().add(
+      StartGroupGameEvent(gameGroupInfo: widget.gameGroupInfo
+      ),
+    );
+
   }
 
   @override
@@ -54,28 +50,26 @@ class _DialogGroupGameJoiningState extends State<DialogGroupGameJoining> {
               vertical: AppSizes.mp_v_2,
             ),
             width: 80.w,
-            child: BlocConsumer<GameGroupJoiningBloc, GameGroupJoiningState>(
+            child: BlocConsumer<GameGroupStartingBloc, GameGroupStartingState>(
               listener: (context, state) {
-                if (state is GameGroupJoiningLoadedState) {
-                  widget.onGameJoined(state.gameGroupInfo);
+                if (state is GameGroupStartingLoadedState) {
+                  widget.onGameStarted();
                 }
               },
               builder: (context, state) {
-                if (state is GameGroupJoiningLoadingState) {
+                if (state is GameGroupStartingLoadingState) {
                   return buildLoadingView(context);
                 }
 
-                if (state is GameGroupJoiningLoadingErrorState) {
+                if (state is GameGroupStartingLoadingErrorState) {
                   return Padding(
                     padding:  EdgeInsets.only(bottom: AppSizes.mp_v_4),
                     child: AppErrorWidget(
                       onTryAgain: () {
-                        context.read<GameGroupJoiningBloc>().add(
-                              JoinGameGroupEvent(
-                                groupQuizId: widget.groupQuizId,
-                                categoryId: widget.categoryId,
-                              ),
-                            );
+                        context.read<GameGroupStartingBloc>().add(
+                          StartGroupGameEvent(gameGroupInfo: widget.gameGroupInfo
+                          ),
+                        );
                       },
                     ),
                   );
@@ -110,7 +104,7 @@ class _DialogGroupGameJoiningState extends State<DialogGroupGameJoining> {
 
         ///BUILD DIALOG TITLE
         Text(
-          "Joining Game",
+          "Starting Game",
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
                 color: AppColors.green,

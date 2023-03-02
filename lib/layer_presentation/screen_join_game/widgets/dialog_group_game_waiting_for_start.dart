@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
-import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_joining/game_group_joining_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/game_group_started_listner_subscription/game_group_started_listner_subscription_bloc.dart';
 import 'package:quiz_bet/layer_data/models/game_group_info.dart';
 import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
 import 'package:quiz_bet/theme/app_assets.dart';
@@ -10,33 +10,27 @@ import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 import 'package:sizer/sizer.dart';
 
-class DialogGroupGameJoining extends StatefulWidget {
-  const DialogGroupGameJoining({
+class DialogGroupGameWaitingForStart extends StatefulWidget {
+  const DialogGroupGameWaitingForStart({
     Key? key,
-    required this.groupQuizId,
-    required this.categoryId,
-    required this.onGameJoined,
+    required this.gameGroupInfo,
+    required this.onGameStarted,
   }) : super(key: key);
 
-  final String groupQuizId;
-  final String categoryId;
-  final Function(GameGroupInfo gameGroupInfo) onGameJoined;
+
+  final GameGroupInfo gameGroupInfo;
+  final VoidCallback onGameStarted;
 
   @override
-  State<DialogGroupGameJoining> createState() => _DialogGroupGameJoiningState();
+  State<DialogGroupGameWaitingForStart> createState() => _DialogGroupGameWaitingForStartState();
 }
 
-class _DialogGroupGameJoiningState extends State<DialogGroupGameJoining> {
+class _DialogGroupGameWaitingForStartState extends State<DialogGroupGameWaitingForStart> {
   @override
   void initState() {
     super.initState();
 
-    context.read<GameGroupJoiningBloc>().add(
-          JoinGameGroupEvent(
-            groupQuizId: widget.groupQuizId,
-            categoryId: widget.categoryId,
-          ),
-        );
+
   }
 
   @override
@@ -54,32 +48,13 @@ class _DialogGroupGameJoiningState extends State<DialogGroupGameJoining> {
               vertical: AppSizes.mp_v_2,
             ),
             width: 80.w,
-            child: BlocConsumer<GameGroupJoiningBloc, GameGroupJoiningState>(
+            child: BlocConsumer<GameGroupStartedListnerSubscriptionBloc, GameGroupStartedListnerSubscriptionState>(
               listener: (context, state) {
-                if (state is GameGroupJoiningLoadedState) {
-                  widget.onGameJoined(state.gameGroupInfo);
+                if (state is GroupGameStartedState) {
+                  widget.onGameStarted();
                 }
               },
               builder: (context, state) {
-                if (state is GameGroupJoiningLoadingState) {
-                  return buildLoadingView(context);
-                }
-
-                if (state is GameGroupJoiningLoadingErrorState) {
-                  return Padding(
-                    padding:  EdgeInsets.only(bottom: AppSizes.mp_v_4),
-                    child: AppErrorWidget(
-                      onTryAgain: () {
-                        context.read<GameGroupJoiningBloc>().add(
-                              JoinGameGroupEvent(
-                                groupQuizId: widget.groupQuizId,
-                                categoryId: widget.categoryId,
-                              ),
-                            );
-                      },
-                    ),
-                  );
-                }
 
                 return buildLoadingView(context);
               },
@@ -110,7 +85,7 @@ class _DialogGroupGameJoiningState extends State<DialogGroupGameJoining> {
 
         ///BUILD DIALOG TITLE
         Text(
-          "Joining Game",
+          "Waiting for game to start",
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
                 color: AppColors.green,

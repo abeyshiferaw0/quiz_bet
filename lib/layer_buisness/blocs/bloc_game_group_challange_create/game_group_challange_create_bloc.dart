@@ -2,6 +2,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:logger/logger.dart';
+import 'package:quiz_bet/layer_data/models/game_group_info.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_game_page.dart';
 
@@ -22,11 +23,13 @@ class GameGroupChallangeCreateBloc
         ///EMIT LOADING
         emit(GameGroupChallangeCreateLoadingState());
 
+
+
         try {
           ///GET USER ID
           String userId = await authPageRepository.getUserId();
 
-          String groupQuizId = await gamePageRepository.createGroupGame(
+          GameGroupInfo gameGroupInfo = await gamePageRepository.createGroupGame(
             userId: userId,
             amountPerPerson: event.amountPerPerson,
             categoryId: event.categoryId,
@@ -35,7 +38,7 @@ class GameGroupChallangeCreateBloc
 
           ///EMIT LOADED
           emit(
-            GameGroupChallangeCreateLoadedState(groupQuizId: groupQuizId),
+            GameGroupChallangeCreateLoadedState(gameGroupInfo: gameGroupInfo),
           );
         } catch (e) {
           emit(GameGroupChallangeCreateLoadingErrorState(

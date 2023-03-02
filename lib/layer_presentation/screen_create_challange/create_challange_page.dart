@@ -1,7 +1,6 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:bouncing_button/bouncing_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_beep/flutter_beep.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiz_bet/config/app_router.dart';
@@ -32,8 +31,8 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
   DropDownCommonModel? selectedLevel;
   final TextEditingController textEditingEntryAmountController =
       TextEditingController();
-  final TextEditingController textEditingMaxNoPlayersController =
-      TextEditingController();
+  // final TextEditingController textEditingMaxNoPlayersController =
+  //     TextEditingController();
 
   @override
   void initState() {
@@ -127,7 +126,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
             AppRouterPaths.addMember,
             arguments: ScreenArguments(
               data: {
-                'quiz_id':state.groupQuizId,
+                'game_group_info':state.gameGroupInfo,
               },
             ),
           );
@@ -400,136 +399,136 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: AppSizes.mp_v_2,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: AppSizes.mp_w_4),
-                  child: Text(
-                    "Maximum Number Of Players",
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          color: AppColors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                ),
-                SizedBox(
-                  height: AppSizes.mp_v_1,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: AppSizes.mp_w_2,
-                    ),
-                    Expanded(
-                      child: Material(
-                        color: AppColors.lightWhite.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(
-                          AppSizes.radius_6,
-                        ),
-                        child: TextFormField(
-                          controller: textEditingMaxNoPlayersController,
-                          keyboardType: TextInputType.number,
-                          textInputAction: TextInputAction.next,
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    color: AppColors.black,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: AppSizes.mp_w_4,
-                              vertical: AppSizes.mp_v_2,
-                            ),
-                            hintText: "Eg. 2 players".toUpperCase(),
-                            hintStyle:
-                                Theme.of(context).textTheme.bodySmall!.copyWith(
-                                      color: AppColors.darkGrey,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppSizes.radius_6,
-                              ),
-                              borderSide: BorderSide.none,
-                            ),
-                            suffixIcon: Icon(
-                              FontAwesomeIcons.user,
-                              size: AppSizes.icon_size_4,
-                              color: AppColors.darkGrey,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: AppSizes.mp_w_8,
-                    ),
-                    Column(
-                      children: [
-                        Material(
-                          color: AppColors.darkBlue,
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(AppSizes.radius_4),
-                          ),
-                          child: AppButtonFeedBack(
-                            onTap: () {
-                              //FlutterBeep.beep();
-                              textEditingMaxNoPlayersController.text =
-                                  "${PagesUtil.getIncrementedBid(textEditingMaxNoPlayersController.text)}";
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: AppSizes.mp_w_6,
-                                vertical: AppSizes.mp_v_1 * 0.5,
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  FontAwesomeIcons.chevronUp,
-                                  size: AppSizes.icon_size_4,
-                                  color: AppColors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: AppSizes.mp_v_1 / 3,
-                        ),
-                        Material(
-                          color: AppColors.darkBlue,
-                          borderRadius: BorderRadius.vertical(
-                            bottom: Radius.circular(AppSizes.radius_4),
-                          ),
-                          child: AppButtonFeedBack(
-                            onTap: () {
-                              //FlutterBeep.beep();
-                              textEditingMaxNoPlayersController.text =
-                                  "${PagesUtil.getDescrimentedBid(textEditingMaxNoPlayersController.text)}";
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: AppSizes.mp_w_6,
-                                vertical: AppSizes.mp_v_1 * 0.5,
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  FontAwesomeIcons.chevronDown,
-                                  size: AppSizes.icon_size_4,
-                                  color: AppColors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      width: AppSizes.mp_w_4,
-                    ),
-                  ],
-                ),
+                // SizedBox(
+                //   height: AppSizes.mp_v_2,
+                // ),
+                // Padding(
+                //   padding: EdgeInsets.only(left: AppSizes.mp_w_4),
+                //   child: Text(
+                //     "Maximum Number Of Players",
+                //     style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                //           color: AppColors.black,
+                //           fontWeight: FontWeight.w600,
+                //         ),
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: AppSizes.mp_v_1,
+                // ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.start,
+                //   children: [
+                //     SizedBox(
+                //       width: AppSizes.mp_w_2,
+                //     ),
+                //     Expanded(
+                //       child: Material(
+                //         color: AppColors.lightWhite.withOpacity(0.5),
+                //         borderRadius: BorderRadius.circular(
+                //           AppSizes.radius_6,
+                //         ),
+                //         child: TextFormField(
+                //           controller: textEditingMaxNoPlayersController,
+                //           keyboardType: TextInputType.number,
+                //           textInputAction: TextInputAction.next,
+                //           style:
+                //               Theme.of(context).textTheme.bodyMedium!.copyWith(
+                //                     color: AppColors.black,
+                //                     fontWeight: FontWeight.w600,
+                //                   ),
+                //           decoration: InputDecoration(
+                //             contentPadding: EdgeInsets.symmetric(
+                //               horizontal: AppSizes.mp_w_4,
+                //               vertical: AppSizes.mp_v_2,
+                //             ),
+                //             hintText: "Eg. 2 players".toUpperCase(),
+                //             hintStyle:
+                //                 Theme.of(context).textTheme.bodySmall!.copyWith(
+                //                       color: AppColors.darkGrey,
+                //                       fontWeight: FontWeight.w600,
+                //                     ),
+                //             border: OutlineInputBorder(
+                //               borderRadius: BorderRadius.circular(
+                //                 AppSizes.radius_6,
+                //               ),
+                //               borderSide: BorderSide.none,
+                //             ),
+                //             suffixIcon: Icon(
+                //               FontAwesomeIcons.user,
+                //               size: AppSizes.icon_size_4,
+                //               color: AppColors.darkGrey,
+                //             ),
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //     SizedBox(
+                //       width: AppSizes.mp_w_8,
+                //     ),
+                //     Column(
+                //       children: [
+                //         Material(
+                //           color: AppColors.darkBlue,
+                //           borderRadius: BorderRadius.vertical(
+                //             top: Radius.circular(AppSizes.radius_4),
+                //           ),
+                //           child: AppButtonFeedBack(
+                //             onTap: () {
+                //               //FlutterBeep.beep();
+                //               textEditingMaxNoPlayersController.text =
+                //                   "${PagesUtil.getIncrementedBid(textEditingMaxNoPlayersController.text)}";
+                //             },
+                //             child: Padding(
+                //               padding: EdgeInsets.symmetric(
+                //                 horizontal: AppSizes.mp_w_6,
+                //                 vertical: AppSizes.mp_v_1 * 0.5,
+                //               ),
+                //               child: Center(
+                //                 child: Icon(
+                //                   FontAwesomeIcons.chevronUp,
+                //                   size: AppSizes.icon_size_4,
+                //                   color: AppColors.white,
+                //                 ),
+                //               ),
+                //             ),
+                //           ),
+                //         ),
+                //         SizedBox(
+                //           height: AppSizes.mp_v_1 / 3,
+                //         ),
+                //         Material(
+                //           color: AppColors.darkBlue,
+                //           borderRadius: BorderRadius.vertical(
+                //             bottom: Radius.circular(AppSizes.radius_4),
+                //           ),
+                //           child: AppButtonFeedBack(
+                //             onTap: () {
+                //               //FlutterBeep.beep();
+                //               textEditingMaxNoPlayersController.text =
+                //                   "${PagesUtil.getDescrimentedBid(textEditingMaxNoPlayersController.text)}";
+                //             },
+                //             child: Padding(
+                //               padding: EdgeInsets.symmetric(
+                //                 horizontal: AppSizes.mp_w_6,
+                //                 vertical: AppSizes.mp_v_1 * 0.5,
+                //               ),
+                //               child: Center(
+                //                 child: Icon(
+                //                   FontAwesomeIcons.chevronDown,
+                //                   size: AppSizes.icon_size_4,
+                //                   color: AppColors.white,
+                //                 ),
+                //               ),
+                //             ),
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //     SizedBox(
+                //       width: AppSizes.mp_w_4,
+                //     ),
+                //   ],
+                // ),
                 SizedBox(
                   height: AppSizes.mp_v_4,
                 ),
@@ -577,13 +576,13 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
                         ).show(context);
                       }
 
-                      if (textEditingMaxNoPlayersController.text.isEmpty) {
-                        canCreateGame = false;
-                        AnimatedSnackBar.material(
-                          'Max number of players not selected',
-                          type: AnimatedSnackBarType.warning,
-                        ).show(context);
-                      }
+                      // if (textEditingMaxNoPlayersController.text.isEmpty) {
+                      //   canCreateGame = false;
+                      //   AnimatedSnackBar.material(
+                      //     'Max number of players not selected',
+                      //     type: AnimatedSnackBarType.warning,
+                      //   ).show(context);
+                      // }
 
                       ///
                       if (canCreateGame) {

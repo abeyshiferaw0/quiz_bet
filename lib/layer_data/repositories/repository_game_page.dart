@@ -84,4 +84,22 @@ class GamePageRepository {
         groupQuizId: groupQuizId,
         categoryId: categoryId,
       );
+
+  listenForGroupGameJoin({required String userId,required String quizGroupId}) async =>
+      service.listenForGroupGameJoin(
+        userId: userId,
+        quizGroupId: quizGroupId,
+      );
+
+  startGroupGame({required String userId, required String quizGroupId}) async =>
+      service.startGroupGame(
+        userId: userId,
+        quizGroupId: quizGroupId,
+      );
+
+  listenForGroupGameStarted({required String userId, required String quizGroupId}) async =>
+      service.listenForGroupGameStarted(
+        userId: userId,
+        quizGroupId: quizGroupId,
+      );
 }

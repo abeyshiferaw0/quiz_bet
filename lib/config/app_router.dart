@@ -11,12 +11,14 @@ import 'package:quiz_bet/layer_buisness/blocs/bloc_game_get_info/game_get_info_b
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_challange_create/game_group_challange_create_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_challange_finder/game_group_challange_finder_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_create_challange/game_group_create_challange_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_joined_subscription/game_group_joined_subscription_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_gmae_history_saver/game_history_saver_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_home_page/home_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/bloc_profile_page/profile_page_bloc.dart';
 import 'package:quiz_bet/layer_buisness/blocs/game_player_page/game_player_bloc.dart';
 import 'package:quiz_bet/layer_buisness/cubits/game_group_challange_create_cubits/game_group_create_challange_drop_down_cubit.dart';
 import 'package:quiz_bet/layer_buisness/cubits/game_start_info_cubit/game_start_info_cubit.dart';
+import 'package:quiz_bet/layer_data/models/game_group_info.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_category_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_game_page.dart';
@@ -37,6 +39,7 @@ import 'package:quiz_bet/layer_presentation/screen_auth_pages/auth_sign_up_page.
 import 'package:quiz_bet/layer_presentation/screen_create_challange/create_challange_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_create_group/create_group_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_friend_request_page/all_frend_request_page.dart';
+import 'package:quiz_bet/layer_presentation/screen_game_group_start_countdown_page/game_start_group_game_countdown_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_game_player_page/game_player_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_game_start_countdown_page/game_start_countdown_page.dart';
 import 'package:quiz_bet/layer_presentation/screen_group_detail_page/group_detail_page.dart';
@@ -70,6 +73,7 @@ class AppRouterPaths {
   static const String gamePlayerPage = '/game_player_page';
   static const String gamePlayerInfoPage = '/game_player_info_page';
   static const String gameStartCountDownPage = '/game_start_countdown_page';
+  static const String gameGroupStartCountDownPage = '/game_group_start_countdown_page';
   static const String profilePage = '/profile_page';
   static const String allCategoriesPage = '/all_categories_page';
   static const String friendRequestPage = '/friend_request_page';
@@ -251,6 +255,13 @@ class AppRouter {
               vatPer: args.data['vatPer'],
             );
         break;
+
+      case AppRouterPaths.gameGroupStartCountDownPage:
+        final args = settings.arguments as ScreenArguments;
+        builder = (_) => GameStartGroupGameCountDownPage(
+          gameGroupInfo: args.data['group_game_info'],
+        );
+        break;
       case AppRouterPaths.profilePage:
         builder = (_) => RepositoryProvider(
               create: (context) =>
@@ -325,8 +336,32 @@ class AppRouter {
         break;
       case AppRouterPaths.addMember:
         final args = settings.arguments as ScreenArguments;
-        builder = (_) => AddMembersPage(
-              quizId: args.data['quiz_id'],
+
+        GameGroupInfo gameGroupInfo= args.data['game_group_info'];
+
+        builder = (_) => MultiRepositoryProvider(
+              providers: [
+                RepositoryProvider(
+                  create: (context) => GamePageRepository(
+                    service: GamePageService(),
+                  ),
+                ),
+                RepositoryProvider(
+                  create: (context) => AuthPageRepository(
+                    service: AuthPageService(),
+                  ),
+                ),
+              ],
+              child: BlocProvider(
+                create: (context) => GameGroupJoinedSubscriptionBloc(
+                  quizId:  gameGroupInfo.groupQuizId,
+                  gamePageRepository: context.read<GamePageRepository>(),
+                  authPageRepository: context.read<AuthPageRepository>(),
+                ),
+                child: AddMembersPage(
+                  gameGroupInfo: gameGroupInfo,
+                ),
+              ),
             );
         break;
 

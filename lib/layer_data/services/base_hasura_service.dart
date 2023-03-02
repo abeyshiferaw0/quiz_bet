@@ -80,6 +80,8 @@ class BaseHasuraService {
     }
   }
 
+
+
   mutation({required String document}) async {
     try {
       ///SEND QUERY
@@ -106,6 +108,12 @@ class BaseHasuraService {
         }
       }
     }
+  }
+
+  Future<Snapshot> subscribe({required String document}) async {
+    ///SUBSCRIBE
+    Snapshot snapshot = await hasuraConnect.subscription(document);
+    return snapshot;
   }
 
   signInUp({required String document}) async {
