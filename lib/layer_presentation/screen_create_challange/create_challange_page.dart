@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiz_bet/config/app_router.dart';
-import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_challange_create/game_group_challange_create_bloc.dart';
-import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_create_challange/game_group_create_challange_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group/bloc_game_group_challange_create/game_group_challange_create_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group/bloc_game_group_create_challange/game_group_create_challange_bloc.dart';
 import 'package:quiz_bet/layer_buisness/cubits/game_group_challange_create_cubits/game_group_create_challange_drop_down_cubit.dart';
 import 'package:quiz_bet/layer_data/models/drop_down_common_model.dart';
 import 'package:quiz_bet/layer_data/models/page_data_models/create_challange_page_data.dart';
@@ -121,7 +121,7 @@ class _CreateChallengePageState extends State<CreateChallengePage> {
         GameGroupChallangeCreateState>(
       listener: (context, state) {
         if (state is GameGroupChallangeCreateLoadedState) {
-          Navigator.pushNamed(
+          Navigator.popAndPushNamed(
             context,
             AppRouterPaths.addMember,
             arguments: ScreenArguments(

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiz_bet/config/app_router.dart';
-import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_joined_subscription/game_group_joined_subscription_bloc.dart';
-import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_starting/game_group_starting_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group/bloc_game_group_joined_subscription/game_group_joined_subscription_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group/bloc_game_group_starting/game_group_starting_bloc.dart';
 import 'package:quiz_bet/layer_data/models/game_group_info.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_auth_page.dart';
 import 'package:quiz_bet/layer_data/repositories/repository_game_page.dart';
@@ -34,9 +34,9 @@ class _AddMembersPageState extends State<AddMembersPage> {
 
   @override
   void initState() {
-    // context.read<GameGroupJoinedSubscriptionBloc>().add(
-    //   SubscibeGameGroupJoinedEvent(quizGroupId: widget.quizGroupId),
-    // );
+    context.read<GameGroupJoinedSubscriptionBloc>().add(
+      StartGameGroupJoinedEvent(),
+    );
 
     super.initState();
   }
@@ -232,64 +232,116 @@ class _AddMembersPageState extends State<AddMembersPage> {
           ),
         ),
         onPressed: () {
-          if (canStartGame) {
-            ///SHOW JOINING DIALOG
-            showDialog<void>(
-              context: context,
-              builder: (BuildContext context) {
-                return MultiRepositoryProvider(
-                  providers: [
-                    RepositoryProvider(
-                      create: (context) =>
-                          GamePageRepository(
-                            service: GamePageService(),
-                          ),
-                    ),
-                    RepositoryProvider(
-                      create: (context) =>
-                          AuthPageRepository(
-                            service: AuthPageService(),
-                          ),
-                    ),
-                  ],
-                  child: BlocProvider(
+          ///SHOW JOINING DIALOG
+          showDialog<void>(
+            context: context,
+            builder: (BuildContext context) {
+              return MultiRepositoryProvider(
+                providers: [
+                  RepositoryProvider(
                     create: (context) =>
-                        GameGroupStartingBloc(
-                          gamePageRepository: context
-                              .read<GamePageRepository>(),
-                          authPageRepository: context
-                              .read<AuthPageRepository>(),
+                        GamePageRepository(
+                          service: GamePageService(),
                         ),
-                    child: DialogGroupGameStarting(
-                      gameGroupInfo: widget.gameGroupInfo,
-
-                      onGameStarted: () {
-                        print("STARTED => ");
-                        Navigator
-                            .popAndPushNamed(
-                          context,
-                          AppRouterPaths
-                              .gameGroupStartCountDownPage,
-                          arguments:
-                          ScreenArguments(
-                            data: {
-                              'group_game_info':
-                              widget.gameGroupInfo,
-                            },
-                          ),
-                        );
-                      },
-                    ),
                   ),
-                );
-              },
-            );
-          } else {
-            AnimatedSnackBar.material(
-              "No One Joined Game",
-              type: AnimatedSnackBarType.error,
-            ).show(context);
-          }
+                  RepositoryProvider(
+                    create: (context) =>
+                        AuthPageRepository(
+                          service: AuthPageService(),
+                        ),
+                  ),
+                ],
+                child: BlocProvider(
+                  create: (context) =>
+                      GameGroupStartingBloc(
+                        gamePageRepository: context
+                            .read<GamePageRepository>(),
+                        authPageRepository: context
+                            .read<AuthPageRepository>(),
+                      ),
+                  child: DialogGroupGameStarting(
+                    gameGroupInfo: widget.gameGroupInfo,
+
+                    onGameStarted: () {
+                      print("STARTED => ");
+                      Navigator.pop(context);
+                      Navigator
+                          .popAndPushNamed(
+                        context,
+                        AppRouterPaths
+                            .gameGroupStartCountDownPage,
+                        arguments:
+                        ScreenArguments(
+                          data: {
+                            'group_game_info':
+                            widget.gameGroupInfo,
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          );
+          // if (canStartGame) {
+          //   ///SHOW JOINING DIALOG
+          //   showDialog<void>(
+          //     context: context,
+          //     builder: (BuildContext context) {
+          //       return MultiRepositoryProvider(
+          //         providers: [
+          //           RepositoryProvider(
+          //             create: (context) =>
+          //                 GamePageRepository(
+          //                   service: GamePageService(),
+          //                 ),
+          //           ),
+          //           RepositoryProvider(
+          //             create: (context) =>
+          //                 AuthPageRepository(
+          //                   service: AuthPageService(),
+          //                 ),
+          //           ),
+          //         ],
+          //         child: BlocProvider(
+          //           create: (context) =>
+          //               GameGroupStartingBloc(
+          //                 gamePageRepository: context
+          //                     .read<GamePageRepository>(),
+          //                 authPageRepository: context
+          //                     .read<AuthPageRepository>(),
+          //               ),
+          //           child: DialogGroupGameStarting(
+          //             gameGroupInfo: widget.gameGroupInfo,
+          //
+          //             onGameStarted: () {
+          //               print("STARTED => ");
+          //               Navigator
+          //                   .popAndPushNamed(
+          //                 context,
+          //                 AppRouterPaths
+          //                     .gameGroupStartCountDownPage,
+          //                 arguments:
+          //                 ScreenArguments(
+          //                   data: {
+          //                     'group_game_info':
+          //                     widget.gameGroupInfo,
+          //                   },
+          //                 ),
+          //               );
+          //             },
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //   );
+          // } else {
+          //   AnimatedSnackBar.material(
+          //     "No One Joined Game",
+          //     type: AnimatedSnackBarType.error,
+          //   ).show(context);
+          // }
         },
         child: Text(
           'Start Game',

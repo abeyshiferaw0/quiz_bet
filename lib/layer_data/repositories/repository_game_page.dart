@@ -39,6 +39,21 @@ class GamePageRepository {
         timeTaken,
       );
 
+  Future<void> saveGroupGameHistory({ required String userId,
+    required String answer,
+    required bool isCorrect,
+    required String questionId,
+    required String groupQuizId,
+    required int timeTaken,}) async =>
+      service.saveGroupGameHistory(
+          userId:userId,
+          answer:answer,
+          isCorrect:isCorrect,
+          questionId:questionId,
+          groupQuizId:groupQuizId,
+          timeTaken:timeTaken,
+      );
+
   Future<void> updateQuizLevel(String quizId, String levelId) async =>
       service.updateQuizLevel(
         quizId,
@@ -102,4 +117,12 @@ class GamePageRepository {
         userId: userId,
         quizGroupId: quizGroupId,
       );
+
+  listenForForfeitWinner({required String userId, required String quizGroupId}) async =>
+      service.listenForForfeitWinner(
+        userId: userId,
+        quizGroupId: quizGroupId,
+      );
+
+
 }

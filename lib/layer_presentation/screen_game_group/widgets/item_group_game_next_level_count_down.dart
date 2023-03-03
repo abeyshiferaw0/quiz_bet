@@ -1,39 +1,38 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_beep/flutter_beep.dart';
-import 'package:quiz_bet/config/app_router.dart';
-import 'package:quiz_bet/layer_data/models/game_group_info.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/game_player_page/game_player_bloc.dart';
 import 'package:quiz_bet/layer_data/models/game_info.dart';
+import 'package:quiz_bet/layer_data/models/game_level.dart';
+import 'package:quiz_bet/layer_presentation/common/app_card.dart';
 import 'package:quiz_bet/theme/app_assets.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 
-class GameStartGroupGameCountDownPage extends StatefulWidget {
-  const GameStartGroupGameCountDownPage({
-    Key? key,
-    required this.gameGroupInfo,
+class ItemGroupGameNextLevelCountDown extends StatefulWidget {
+  const ItemGroupGameNextLevelCountDown({
+    Key? key, required this.onCountDownFinished,
+
   }) : super(key: key);
 
-  final GameGroupInfo gameGroupInfo;
+  final VoidCallback onCountDownFinished;
 
   @override
-  State<GameStartGroupGameCountDownPage> createState() =>
-      _GameStartGroupGameCountDownPageState();
+  State<ItemGroupGameNextLevelCountDown> createState() =>
+      _ItemGameGameNextLevelCountDownState();
 }
 
-class _GameStartGroupGameCountDownPageState
-    extends State<GameStartGroupGameCountDownPage> {
-  @override
-  void initState() {
-    print("object ${widget.gameGroupInfo.groupQuizId}");
-    super.initState();
-  }
-
+class _ItemGameGameNextLevelCountDownState
+    extends State<ItemGroupGameNextLevelCountDown> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return AppCard(
+      radius: AppSizes.radius_12,
+      child: Material(
+        elevation: 2,
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSizes.radius_6),
         child: Column(
           children: [
             // ///BUILD APP BAR
@@ -107,59 +106,6 @@ class _GameStartGroupGameCountDownPageState
       ),
     );
   }
-
-  // Container buildContinueButton(BuildContext context) {
-  //   return Container(
-  //     width: double.infinity,
-  //     margin: EdgeInsets.symmetric(
-  //       horizontal: AppSizes.mp_w_14,
-  //     ),
-  //     child: ElevatedButton(
-  //       style: ElevatedButton.styleFrom(
-  //         foregroundColor: AppColors.white,
-  //         backgroundColor: AppColors.darkBlue,
-  //         padding: EdgeInsets.symmetric(
-  //           vertical: AppSizes.mp_v_2,
-  //         ),
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.all(
-  //             Radius.circular(
-  //               AppSizes.radius_6,
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //       onPressed: () {
-  //         Navigator.pushNamed(
-  //           context,
-  //           AppRouterPaths.gamePlayerPage,
-  //         );
-  //       },
-  //       child: Row(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           Text(
-  //             'Continue',
-  //             textAlign: TextAlign.center,
-  //             style: Theme.of(context).textTheme.bodySmall!.copyWith(
-  //                   color: AppColors.white,
-  //                   fontSize: AppSizes.font_12,
-  //                   fontWeight: FontWeight.bold,
-  //                 ),
-  //           ),
-  //           SizedBox(
-  //             width: AppSizes.mp_w_2,
-  //           ),
-  //           Icon(
-  //             FontAwesomeIcons.solidCircleChevronRight,
-  //             size: AppSizes.icon_size_4,
-  //             color: AppColors.gold,
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
   buildAppBar() {
     return Container(
@@ -252,7 +198,7 @@ class _GameStartGroupGameCountDownPageState
           height: AppSizes.mp_v_6,
         ),
         Text(
-          "Game will start in",
+          "Next level will start in",
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
                 color: AppColors.darkGold,
@@ -281,13 +227,8 @@ class _GameStartGroupGameCountDownPageState
                 //FlutterBeep.beep();
               },
               onFinished: () {
-                Navigator.popAndPushNamed(
-                  context,
-                  AppRouterPaths.gameGroupPlayerPage,
-                  arguments: ScreenArguments(
-                    data: {'game_group_info':widget.gameGroupInfo},
-                  ),
-                );
+                ///START PLAYING INITIAL GAME LEVEL
+       widget.onCountDownFinished();
               },
               animatedTexts: [
                 FadeAnimatedText(

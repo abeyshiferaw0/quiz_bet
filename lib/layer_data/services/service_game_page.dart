@@ -138,6 +138,35 @@ class GamePageService {
     }
   }
 
+  Future<void> saveGroupGameHistory(
+      {    required String userId,
+        required String answer,
+        required bool isCorrect,
+        required String questionId,
+        required String groupQuizId,
+        required int timeTaken,}) async {
+    try {
+      ///INSERT GAME QUIZ
+      var response = await baseHasuraService.mutation(
+        document: gqlGamePage.saveGroupGameHistory(
+            userId:userId,
+            answer:answer,
+            isCorrect:isCorrect,
+            questionId:questionId,
+            groupQuizId:groupQuizId,
+            timeTaken:timeTaken,
+        ),
+      );
+
+      print("saveGroupGameHistory => ${response}");
+
+      return response['data']['insert_game_gamePlayHistoryGroup_one']['id'];
+    } catch (e) {
+      log.e("startGameLevel => ${e.toString()}");
+      rethrow;
+    }
+  }
+
   saveGameForfitHistory(String quizId, GameLevel gameLevel, int timeTaken,
       Choice choice, GameQuestion gameQuestion) async {
     try {
@@ -396,6 +425,17 @@ class GamePageService {
       {required String userId, required String quizGroupId}) async {
     Snapshot snapshot = await baseHasuraService.subscribe(
       document: gqlGamePage.listenForGroupGameStarted(
+        userId: userId,
+        quizGroupId: quizGroupId,
+      ),
+    );
+
+    return snapshot;
+  }
+
+  listenForForfeitWinner({required String userId, required String quizGroupId}) async{
+    Snapshot snapshot = await baseHasuraService.subscribe(
+      document: gqlGamePage.listenForForfeitWinner(
         userId: userId,
         quizGroupId: quizGroupId,
       ),

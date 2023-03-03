@@ -30,8 +30,6 @@ class GameGroupStartedListnerSubscriptionBloc extends Bloc<
     startStartedListner();
 
     on<GameGroupStartedListnerSubscriptionEvent>((event, emit) async {
-
-      on<GameGroupStartedListnerSubscriptionEvent>((event, emit) async {});
     });
   }
 

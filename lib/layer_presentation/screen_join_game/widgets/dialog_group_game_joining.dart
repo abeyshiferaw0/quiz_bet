@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
-import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_joining/game_group_joining_bloc.dart';
+import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group/bloc_game_group_joining/game_group_joining_bloc.dart';
 import 'package:quiz_bet/layer_data/models/game_group_info.dart';
 import 'package:quiz_bet/layer_presentation/common/app_error_widget.dart';
 import 'package:quiz_bet/theme/app_assets.dart';

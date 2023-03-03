@@ -1,12 +1,6 @@
-import 'package:bouncing_button/bouncing_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
-import 'package:quiz_bet/config/app_router.dart';
-import 'package:quiz_bet/layer_buisness/blocs/bloc_game_group_joined_subscription/game_group_joined_subscription_bloc.dart';
 import 'package:quiz_bet/layer_data/models/game_group_info.dart';
-import 'package:quiz_bet/layer_presentation/screen_add_members/widgets/joined_players_list.dart';
 import 'package:quiz_bet/theme/app_assets.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';

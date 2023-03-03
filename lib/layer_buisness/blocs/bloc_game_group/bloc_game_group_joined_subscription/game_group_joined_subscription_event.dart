@@ -5,4 +5,12 @@ abstract class GameGroupJoinedSubscriptionEvent extends Equatable {
 }
 
 
+class StartGameGroupJoinedEvent extends GameGroupJoinedSubscriptionEvent {
+  const StartGameGroupJoinedEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+
 

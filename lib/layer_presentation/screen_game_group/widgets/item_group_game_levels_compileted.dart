@@ -6,18 +6,18 @@ import 'package:quiz_bet/theme/app_assets.dart';
 import 'package:quiz_bet/theme/app_colors.dart';
 import 'package:quiz_bet/theme/app_sizes.dart';
 
-class ItemGameLevelsComplited extends StatefulWidget {
-  const ItemGameLevelsComplited(
+class ItemGroupGameLevelsCompilited extends StatefulWidget {
+  const ItemGroupGameLevelsCompilited(
       {Key? key,})
       : super(key: key);
 
 
 
   @override
-  State<ItemGameLevelsComplited> createState() => _ItemGameLevelsComplitedState();
+  State<ItemGroupGameLevelsCompilited> createState() => _ItemGroupGameLevelsCompilitedState();
 }
 
-class _ItemGameLevelsComplitedState extends State<ItemGameLevelsComplited> {
+class _ItemGroupGameLevelsCompilitedState extends State<ItemGroupGameLevelsCompilited> {
   @override
   void initState() {
 
@@ -26,103 +26,110 @@ class _ItemGameLevelsComplitedState extends State<ItemGameLevelsComplited> {
 
   @override
   Widget build(BuildContext context) {
-    return AppCard(
-      radius: AppSizes.radius_12,
-      child: Material(
-        elevation: 2,
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSizes.radius_6),
-        child:  Stack(
-      children: [
-      Opacity(
-      opacity: 0.2,
-        child: Lottie.asset(
-          AppAssets.fireWorkLottie,
-          width: double.infinity,
-          height: double.infinity,
-        ),
-      ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+
+
+    return Padding(
+      padding: EdgeInsets.all( AppSizes.mp_v_2),
+      child: AppCard(
+        radius: AppSizes.radius_12,
+        child: Material(
+          elevation: 2,
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(AppSizes.radius_6),
+          child:  Stack(
         children: [
-
-
-
-          Text(
-            "GAME COMPLETED".toUpperCase(),
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              color: AppColors.green,
-              fontSize: AppSizes.font_22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          ///CONGRATULATIONS HEADER
-          // buildCongratulationsHeader(context),
-
-          SizedBox(
-            height: AppSizes.mp_v_1,
-          ),
-
-          SizedBox(
-            height: AppSizes.mp_v_4,
-          ),
-
-          // ///BUILD ACTION BUTTONS
-          // buildActionButtons(context),
-
-          Container(
+        Opacity(
+        opacity: 0.2,
+          child: Lottie.asset(
+            AppAssets.fireWorkLottie,
             width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: AppSizes.mp_w_6),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: AppColors.white,
-                backgroundColor: AppColors.darkBlue,
-                padding: EdgeInsets.symmetric(
-                  vertical: AppSizes.mp_v_4,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(
-                      AppSizes.radius_6,
-                    ),
-                  ),
-                ),
-              ),
-              onPressed: () {
-Navigator.pop(context);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'PLAY ANOTHER GAME',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: AppColors.white,
-                      fontSize: AppSizes.font_12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(
-                    width: AppSizes.mp_w_6,
-                  ),
-                  Icon(
-                    FontAwesomeIcons.arrowRightLong,
-                    size: AppSizes.icon_size_6,
-                    color: AppColors.white,
-                  ),
-                ],
+            height: double.infinity,
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+
+
+
+
+            Text(
+              "GAME COMPLETED".toUpperCase(),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: AppColors.green,
+                fontSize: AppSizes.font_22,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
 
+            ///CONGRATULATIONS HEADER
+            // buildCongratulationsHeader(context),
+
+            SizedBox(
+              height: AppSizes.mp_v_1,
+            ),
+
+            SizedBox(
+              height: AppSizes.mp_v_4,
+            ),
+
+            // ///BUILD ACTION BUTTONS
+            // buildActionButtons(context),
+
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.mp_w_6),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: AppColors.white,
+                  backgroundColor: AppColors.darkBlue,
+                  padding: EdgeInsets.symmetric(
+                    vertical: AppSizes.mp_v_4,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(
+                        AppSizes.radius_6,
+                      ),
+                    ),
+                  ),
+                ),
+                onPressed: () {
+Navigator.pop(context);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'PLAY ANOTHER GAME',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        color: AppColors.white,
+                        fontSize: AppSizes.font_12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      width: AppSizes.mp_w_6,
+                    ),
+                    Icon(
+                      FontAwesomeIcons.arrowRightLong,
+                      size: AppSizes.icon_size_6,
+                      color: AppColors.white,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          ],
+        ),
         ],
       ),
-      ],
-    ),
+        ),
       ),
     );
   }
