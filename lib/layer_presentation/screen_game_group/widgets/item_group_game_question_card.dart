@@ -55,7 +55,7 @@ class _ItemGroupGameQuestionState extends State<ItemGroupGameQuestion>
       () {
         if (timerController.value.remaining < 1) {
           ///CHECK FOR ANSWER WHEN TIME RUNS OUT
-          //checkFoAnswer(false);
+          checkFoAnswer(false);
         }
       },
     );

@@ -172,6 +172,7 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
                     ),
                     Expanded(
                       child: SizedBox(),
+
                     ),
                     Text(
                       "${findGroupChallangePageData.amountPerPerson.toStringAsFixed(2)} ETB",
@@ -233,38 +234,38 @@ class _JoinGameGameFindPageState extends State<JoinGameGameFindPage> {
               SizedBox(
                 height: AppSizes.mp_v_2,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSizes.mp_w_4,
-                  vertical: AppSizes.mp_v_1 / 3,
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      "Winning Prize",
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: AppColors.grey,
-                            fontSize: AppSizes.font_12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    Expanded(
-                      child: SizedBox(),
-                    ),
-                    Text(
-                      "${(findGroupChallangePageData.amountPerPerson * 2).toStringAsFixed(2)} ETB",
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: AppColors.gold,
-                            fontSize: AppSizes.font_14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: AppSizes.mp_v_2,
-              ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(
+              //     horizontal: AppSizes.mp_w_4,
+              //     vertical: AppSizes.mp_v_1 / 3,
+              //   ),
+              //   child: Row(
+              //     children: [
+              //       Text(
+              //         "Winning Prize",
+              //         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              //               color: AppColors.grey,
+              //               fontSize: AppSizes.font_12,
+              //               fontWeight: FontWeight.w600,
+              //             ),
+              //       ),
+              //       Expanded(
+              //         child: SizedBox(),
+              //       ),
+              //       Text(
+              //         "${(findGroupChallangePageData.amountPerPerson * 5).toStringAsFixed(2)} ETB",
+              //         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              //               color: AppColors.gold,
+              //               fontSize: AppSizes.font_14,
+              //               fontWeight: FontWeight.bold,
+              //             ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: AppSizes.mp_v_2,
+              // ),
               ClipRRect(
                 borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(AppSizes.radius_10),

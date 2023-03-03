@@ -247,7 +247,7 @@ class GqlGamePage {
       {required String userId, required String groupQuizId}) {
     return """
         query mm {
-          game_quizGroup_by_pk(id: "01a6d438-bcfe-47d8-9f38-8083b8df62a2") {
+          game_quizGroup_by_pk(id: "$groupQuizId") {
             amount_per_person
             categoryList {
               id

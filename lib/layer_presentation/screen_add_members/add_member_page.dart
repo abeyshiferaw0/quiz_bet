@@ -233,115 +233,64 @@ class _AddMembersPageState extends State<AddMembersPage> {
         ),
         onPressed: () {
           ///SHOW JOINING DIALOG
-          showDialog<void>(
-            context: context,
-            builder: (BuildContext context) {
-              return MultiRepositoryProvider(
-                providers: [
-                  RepositoryProvider(
+          if (canStartGame) {
+            ///SHOW JOINING DIALOG
+            showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return MultiRepositoryProvider(
+                  providers: [
+                    RepositoryProvider(
+                      create: (context) =>
+                          GamePageRepository(
+                            service: GamePageService(),
+                          ),
+                    ),
+                    RepositoryProvider(
+                      create: (context) =>
+                          AuthPageRepository(
+                            service: AuthPageService(),
+                          ),
+                    ),
+                  ],
+                  child: BlocProvider(
                     create: (context) =>
-                        GamePageRepository(
-                          service: GamePageService(),
+                        GameGroupStartingBloc(
+                          gamePageRepository: context
+                              .read<GamePageRepository>(),
+                          authPageRepository: context
+                              .read<AuthPageRepository>(),
                         ),
-                  ),
-                  RepositoryProvider(
-                    create: (context) =>
-                        AuthPageRepository(
-                          service: AuthPageService(),
-                        ),
-                  ),
-                ],
-                child: BlocProvider(
-                  create: (context) =>
-                      GameGroupStartingBloc(
-                        gamePageRepository: context
-                            .read<GamePageRepository>(),
-                        authPageRepository: context
-                            .read<AuthPageRepository>(),
-                      ),
-                  child: DialogGroupGameStarting(
-                    gameGroupInfo: widget.gameGroupInfo,
+                    child: DialogGroupGameStarting(
+                      gameGroupInfo: widget.gameGroupInfo,
 
-                    onGameStarted: () {
-                      print("STARTED => ");
-                      Navigator.pop(context);
-                      Navigator
-                          .popAndPushNamed(
-                        context,
-                        AppRouterPaths
-                            .gameGroupStartCountDownPage,
-                        arguments:
-                        ScreenArguments(
-                          data: {
-                            'group_game_info':
-                            widget.gameGroupInfo,
-                          },
-                        ),
-                      );
-                    },
+                      onGameStarted: () {
+                        print("STARTED => ");
+                        Navigator
+                            .popAndPushNamed(
+                          context,
+                          AppRouterPaths
+                              .gameGroupStartCountDownPage,
+                          arguments:
+                          ScreenArguments(
+                            data: {
+                              'group_game_info':
+                              widget.gameGroupInfo,
+                            },
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-          // if (canStartGame) {
-          //   ///SHOW JOINING DIALOG
-          //   showDialog<void>(
-          //     context: context,
-          //     builder: (BuildContext context) {
-          //       return MultiRepositoryProvider(
-          //         providers: [
-          //           RepositoryProvider(
-          //             create: (context) =>
-          //                 GamePageRepository(
-          //                   service: GamePageService(),
-          //                 ),
-          //           ),
-          //           RepositoryProvider(
-          //             create: (context) =>
-          //                 AuthPageRepository(
-          //                   service: AuthPageService(),
-          //                 ),
-          //           ),
-          //         ],
-          //         child: BlocProvider(
-          //           create: (context) =>
-          //               GameGroupStartingBloc(
-          //                 gamePageRepository: context
-          //                     .read<GamePageRepository>(),
-          //                 authPageRepository: context
-          //                     .read<AuthPageRepository>(),
-          //               ),
-          //           child: DialogGroupGameStarting(
-          //             gameGroupInfo: widget.gameGroupInfo,
-          //
-          //             onGameStarted: () {
-          //               print("STARTED => ");
-          //               Navigator
-          //                   .popAndPushNamed(
-          //                 context,
-          //                 AppRouterPaths
-          //                     .gameGroupStartCountDownPage,
-          //                 arguments:
-          //                 ScreenArguments(
-          //                   data: {
-          //                     'group_game_info':
-          //                     widget.gameGroupInfo,
-          //                   },
-          //                 ),
-          //               );
-          //             },
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //   );
-          // } else {
-          //   AnimatedSnackBar.material(
-          //     "No One Joined Game",
-          //     type: AnimatedSnackBarType.error,
-          //   ).show(context);
-          // }
+                );
+              },
+            );
+          } else {
+            AnimatedSnackBar.material(
+              "No One Joined Game",
+              type: AnimatedSnackBarType.error,
+            ).show(context);
+          }
         },
         child: Text(
           'Start Game',
